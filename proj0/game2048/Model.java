@@ -5,7 +5,7 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author HangX-Ma
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -113,6 +113,15 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        if (atLeastOneMoveExists(board)) {
+            board.setViewingPerspective(side);
+            for (int col = 0; col < board.size(); col++) {
+                if (tile_per_column(col)) {
+                    changed = true;
+                }
+            }
+            board.setViewingPerspective(Side.NORTH);
+        } 
 
         checkGameOver();
         if (changed) {
@@ -120,6 +129,50 @@ public class Model extends Observable {
         }
         return changed;
     }
+
+    public boolean tile_per_column(int col) {
+        Tile elem, addend_elem = null;
+        int row_top = board.size() - 1;
+        int addend_idx = -1;
+        int row = row_top;
+        boolean changed = false;
+
+        while (row >= 0) {
+            if ((elem = board.tile(col, row)) != null) {
+                if (addend_idx == -1) {
+                    /* Get addend property */
+                    addend_idx  = row;
+                    addend_elem = elem;
+                    /* Move this addend to current row_top */
+                    board.move(col, row_top, addend_elem);
+                    if (row != row_top) {
+                        changed = true;
+                    }
+                } else {
+                    /* We have one addend now. Search for next one */
+                    if (elem.value() == addend_elem.value()) {
+                        board.move(col, row_top, elem);
+                        score += board.tile(col, row_top).value();
+                        /* update row_top to avoid duplicated add operation */
+                        row_top--;
+                        addend_idx = -1;
+                    } else {
+                        // If not equal, we move this element to (row_top - 1).
+                        // Afterwards we update addend.
+                        row_top--;
+                        addend_idx = row_top;
+                        board.move(col, row_top, elem);
+                        addend_elem = board.tile(col, row_top);
+                    }
+                    changed = true;
+                }
+            }
+            row--; // goto next row
+        }
+
+        return changed;
+    }
+
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
@@ -137,7 +190,14 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        int size = b.size();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (b.tile(i, j) == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -147,7 +207,15 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        int size = b.size();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                Tile cur_tile = b.tile(i, j);
+                if (cur_tile != null && cur_tile.value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -158,7 +226,33 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        /* Only check the right and up neighbors */
+        int size = b.size();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                Tile cur_tile = b.tile(i, j);
+                Tile unb_tile = b.tile(i < size - 1 ? i + 1 : size - 1, j);
+                Tile rnb_tile = b.tile(i, j < size - 1 ? j + 1 : size - 1);
+                if (cur_tile == null || unb_tile == null || rnb_tile == null) {
+                    return true;
+                } else if (cur_tile == rnb_tile && cur_tile == unb_tile) {
+                    continue;
+                } else if (cur_tile == rnb_tile) {
+                    if (cur_tile.value() == unb_tile.value()) {
+                        return true;
+                    }
+                } else if (cur_tile == unb_tile) {
+                    if (cur_tile.value() == rnb_tile.value()) {
+                        return true;
+                    }
+                } else {
+                    if (cur_tile.value() == rnb_tile.value() || 
+                        cur_tile.value() == unb_tile.value()) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
