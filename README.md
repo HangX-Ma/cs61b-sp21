@@ -13,7 +13,7 @@ This is a repository contains CS61B labs and projects, which also records my sel
 
 If you want to code with VSCode, you can use this easy configuration. [config/template-make.sh](config/template-make.sh) is provided to assist your project development. You can have a glance at it if you are interested it!
 
-> Note: MAVEN is used to manage the project since lab2. If you have install the `Extension Pack for Java`, please configure your user [setting.json](config/template-setting.json).  What't more, don't forget to configure the local repository in `setting.xml` to where the `library-sp21/javalib` locates at.
+> Note: MAVEN is used to manage the project since lab2. If you have installed the `Extension Pack for Java`, please configure your user [setting.json](config/template-setting.json).  What't more, don't forget to set the local repository property in `setting.xml` to where the `library-sp21/javalib` locates at.
 
 ## Labs
 
