@@ -1,0 +1,6 @@
+{
+    // java maven
+    "java.configuration.maven.globalSettings": "/home/mcontour/apache-maven-3.9.1/conf/settings.xml",
+    "java.configuration.maven.userSettings": "/home/mcontour/apache-maven-3.9.1/conf/settings.xml",
+    "maven.executable.path": "/home/mcontour/apache-maven-3.9.1/bin/mvn"
+}

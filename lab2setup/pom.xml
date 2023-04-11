@@ -16,8 +16,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <build>
-        <sourceDirectory>${project.basedir}</sourceDirectory>
-        <testSourceDirectory>${project.basedir}</testSourceDirectory>
+        <sourceDirectory>${project.basedir}</sourceDirectory>  
+        <testSourceDirectory>${project.basedir}</testSourceDirectory> 
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -40,5 +40,5 @@
             </plugin>
         </plugins>
     </build>
-    
+
 </project>
