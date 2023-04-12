@@ -1,5 +1,7 @@
 package IntList;
 
+import static java.lang.Math.abs;
+
 public class IntListExercises {
 
     /**
@@ -9,11 +11,15 @@ public class IntListExercises {
      * @param lst IntList from Lecture
      */
      public static void addConstant(IntList lst, int c) {
-        IntList head = lst;
-        do {
-            head.first += c;
-            head = head.rest;
-        } while (head != null);
+         if (lst == null) {
+             return;
+         }
+
+         IntList head = lst;
+         do {
+             head.first += c;
+             head = head.rest;
+         } while (head != null);
     }
 
     /**
@@ -50,6 +56,7 @@ public class IntListExercises {
      *  the first digit of x.
      */
     public static boolean firstDigitEqualsLastDigit(int x) {
+        x = abs(x);
         int lastDigit = x % 10;
         while (x > 10) {
             x = x / 10;
