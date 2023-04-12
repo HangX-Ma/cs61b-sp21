@@ -53,5 +53,4 @@ public class SetToZeroIfMaxFELTest {
         assert L != null;
         assertEquals("0 -> 0 -> 0", L.toString());
     }
-
 }
