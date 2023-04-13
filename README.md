@@ -10,6 +10,8 @@ This is a repository contains CS61B labs and projects, which also records my sel
   - Extension Pack for Java, Microsoft
   - Language Support for Java(TM) by Red Hat, Red Hat
   - Java Debugger, Don Jayamanne
+- IntelliJ Idea Extensions
+  - IdeaVim, JetBrains s.r.o. ([customed vim key mapping](https://gist.github.com/HangX-Ma/5966a45a65131c2b0275bdf2c936b782))
 
 If you want to code with VSCode, you can use this easy configuration. [config/template-make.sh](config/template-make.sh) is provided to assist your project development. You can have a glance at it if you are interested it!
 
@@ -20,6 +22,7 @@ If you want to code with VSCode, you can use this easy configuration. [config/te
 ## Labs
 
 - [x] Lab 1: Welcome to Java
+- [x] Lab 2: JUnit Tests and Debugging
 
 ## Projects
 
