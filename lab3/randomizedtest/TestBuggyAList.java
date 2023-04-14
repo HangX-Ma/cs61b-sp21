@@ -42,11 +42,11 @@ public class TestBuggyAList {
                 int randVal = StdRandom.uniform(0, 100);
                 bugAList.addLast(randVal);
                 AList.addLast(randVal);
-                System.out.println("addLast(" + randVal + ")");
+                // System.out.println("addLast(" + randVal + ")");
             } else if (operationNumber == 1) {
                 // size
                 int size = bugAList.size();
-                System.out.println("size: " + size);
+                // System.out.println("size: " + size);
             } else if (operationNumber == 2) {
                 // remove last
                 if (bugAList.size() > 0 && AList.size() > 0) {
