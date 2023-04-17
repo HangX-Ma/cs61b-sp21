@@ -23,10 +23,13 @@ If you want to code with VSCode, you can use this easy configuration. [config/te
 
 - [x] Lab 1: Welcome to Java
 - [x] Lab 2: JUnit Tests and Debugging
+- [x] Lab 3: Timing Tests and Randomized Comparison Tests
+- [x] Lab 4: Git and Debugging
 
 ## Projects
 
 - [x] Project 0: 2048
+- [ ] Project 1: Data Structures
 
 ## License
 
