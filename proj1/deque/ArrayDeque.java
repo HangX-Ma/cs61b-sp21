@@ -28,8 +28,9 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         }
 
         if (tail_idx < front_idx) {
-            System.arraycopy(items, 0, new_items, 0, tail_idx);
+            System.arraycopy(items, 0, new_items, 0, tail_idx + 1);
             System.arraycopy(items, front_idx, new_items, capacity - (items.length - front_idx), items.length - front_idx);
+            front_idx = capacity - (items.length - front_idx);
         }
 
         items = new_items;
@@ -73,8 +74,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     /** Prints the items in the deque from first to last, separated by a space.
      *  Once all the items have been printed, print out a new line. */
     public void printDeque() {
-        for (int i = front_idx; i < front_idx + size ; i++) {
-            System.out.print(get(getIndex(i)));
+        for (int i = front_idx; i < front_idx + size; i++) {
+            System.out.print(items[getIndex(i)]);
             if (i != front_idx + size - 1) {
                 System.out.print(" ");
             } else {
@@ -127,7 +128,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (index < 0 || index > size - 1) {
             return null;
         }
-        return items[index];
+        int idx = getIndex(front_idx + index);
+        return items[idx];
     }
     /** The Deque objects we’ll make are iterable (i.e. Iterable<T>) so we must
      * provide this method to return an iterator. */
@@ -140,18 +142,18 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         int index;
 
         public ArrayDequeIterator() {
-            index = front_idx;
+            index = 0;
         }
 
         @Override
         public boolean hasNext() {
-            return index != tail_idx;
+            return index < size;
         }
 
         @Override
         public T next() {
             T item = get(index);
-            index = getIndex(index + 1);
+            index += 1;
 
             return item;
         }
@@ -181,8 +183,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             return false;
         }
 
-        for (int i = front_idx; i < front_idx + size ; i++) {
-            if (this.get(getIndex(i)) != _ad.get(getIndex(i))) {
+        for (int i = 0; i < size ; i++) {
+            if (this.get(i) != _ad.get(i)) {
                 return false;
             }
         }
