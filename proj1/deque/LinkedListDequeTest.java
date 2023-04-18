@@ -182,6 +182,9 @@ public class LinkedListDequeTest {
 
         lld2.addLast(2);
         assertNotEquals(lld1, lld2);
+
+        lld2.addFirst(3);
+        assertNotEquals(lld1, lld2);
     }
 
     @Test
