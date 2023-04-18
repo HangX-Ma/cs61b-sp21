@@ -9,15 +9,15 @@ public class GuitarHero {
     private static final double CONCERT_BASE = 440.0;
 
     private static double getConcert(int i) {
-        return CONCERT_BASE * Math.pow(2, (double)(i - 24) / 12);
+        return CONCERT_BASE * Math.pow(2, (double) (i - 24) / 12);
     }
 
     public static void main(String[] args) {
         /* create 37 guitar strings, for concert A and C */
-        GuitarString[] GStr = new GuitarString[keyboard.length()];
+        GuitarString[] gStr = new GuitarString[keyboard.length()];
 
         for (int i = 0; i < keyboard.length(); i++) {
-            GStr[i] = new GuitarString(getConcert(i));
+            gStr[i] = new GuitarString(getConcert(i));
         }
 
         while (true) {
@@ -28,13 +28,13 @@ public class GuitarHero {
                 int keyIndex = keyboard.indexOf(key);
 
                 if (keyIndex > 0) {
-                    GStr[keyIndex].pluck();
+                    gStr[keyIndex].pluck();
                 }
             }
 
             double sample = 0.0;
             /* compute the superposition of samples */
-            for (GuitarString guitarConcert: GStr) {
+            for (GuitarString guitarConcert: gStr) {
                 sample += guitarConcert.sample();
             }
 
@@ -42,7 +42,7 @@ public class GuitarHero {
             StdAudio.play(sample);
 
             /* advance the simulation of each guitar string by one step */
-            for (GuitarString guitarConcert: GStr) {
+            for (GuitarString guitarConcert: gStr) {
                 guitarConcert.tic();
             }
         }

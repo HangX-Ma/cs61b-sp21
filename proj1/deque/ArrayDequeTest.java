@@ -1,16 +1,19 @@
 package deque;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
 import edu.princeton.cs.algs4.StdRandom;
 
-/** Performs some basic linked list tests. */
+/**
+ * Performs some basic linked list tests.
+ */
 public class ArrayDequeTest {
 
     @Test
-    /** Adds a few things to the list, checking isEmpty() and size() are correct,
+    /* Adds a few things to the list, checking isEmpty() and size() are correct,
      * finally printing the results.
-     *
      * && is the "and" operation. */
     public void addIsEmptySizeTest() {
 
@@ -35,8 +38,9 @@ public class ArrayDequeTest {
         ad1.printDeque();
     }
 
+
     @Test
-    /** Adds an item, then removes an item, and ensures that dll is empty afterwards. */
+    /* Adds an item, then removes an item, and ensures that dll is empty afterwards. */
     public void addRemoveTest() {
 
         System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
@@ -78,8 +82,8 @@ public class ArrayDequeTest {
     /* Check if you can create ArrayDeques with different parameterized types*/
     public void multipleParamTest() {
 
-        ArrayDeque<String>  ad1 = new ArrayDeque<String>();
-        ArrayDeque<Double>  ad2 = new ArrayDeque<Double>();
+        ArrayDeque<String> ad1 = new ArrayDeque<String>();
+        ArrayDeque<Double> ad2 = new ArrayDeque<Double>();
         ArrayDeque<Boolean> ad3 = new ArrayDeque<Boolean>();
 
         ad1.addFirst("string");
@@ -100,8 +104,8 @@ public class ArrayDequeTest {
 
         boolean passed1 = false;
         boolean passed2 = false;
-        assertEquals("Should return null when removeFirst is called on an empty Deque,", null, ad1.removeFirst());
-        assertEquals("Should return null when removeLast is called on an empty Deque,", null, ad1.removeLast());
+        assertNull("Should return null when removeFirst is called on an empty Deque,", ad1.removeFirst());
+        assertNull("Should return null when removeLast is called on an empty Deque,", ad1.removeLast());
 
     }
 
