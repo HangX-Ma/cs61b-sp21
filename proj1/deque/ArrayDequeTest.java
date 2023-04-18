@@ -1,5 +1,6 @@
 package deque;
 
+import edu.princeton.cs.algs4.In;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -216,10 +217,14 @@ public class ArrayDequeTest {
     public void equalsTest() {
         ArrayDeque<Integer> ad1 = new ArrayDeque<>();
         ArrayDeque<Integer> ad2 = new ArrayDeque<>();
+        Deque<Integer> ad3 = new ArrayDeque<>();
 
         ad1.addLast(0);
         ad2.addLast(0);
         assertEquals(ad1, ad2);
+
+        ad3.addLast(0);
+        assertEquals(ad1, ad3);
 
         ad1.addLast(1);
         assertNotEquals(ad1, ad2);
