@@ -8,8 +8,8 @@ import edu.princeton.cs.algs4.StdRandom;
 public class TestArrayDequeEC {
     @Test
     public void randomArrayDequeTest() {
-        StudentArrayDeque<Integer> stad1 = new StudentArrayDeque<>();
-        ArrayDequeSolution<Integer> stad2 = new ArrayDequeSolution<>();
+        StudentArrayDeque<Integer> st = new StudentArrayDeque<>();
+        ArrayDequeSolution<Integer> sol = new ArrayDequeSolution<>();
 
         int M = 5000;
         StringBuilder str = new StringBuilder("\n");
@@ -17,26 +17,34 @@ public class TestArrayDequeEC {
             int operationNumber = StdRandom.uniform(0, 4);
             if (operationNumber == 0) {
                 int randVal= StdRandom.uniform(0, 100);
-                stad1.addFirst(randVal);
-                stad2.addFirst(randVal);
+                st.addFirst(randVal);
+                sol.addFirst(randVal);
                 str.append("AddFirst(").append(randVal).append(")\n");
             } else if (operationNumber == 1) {
                 int randVal= StdRandom.uniform(0, 100);
-                stad1.addLast(randVal);
-                stad2.addLast(randVal);
+                st.addLast(randVal);
+                sol.addLast(randVal);
                 str.append("AddLast(").append(randVal).append(")\n");
             }
 
-            if (stad2.isEmpty()) {
+            if (st.isEmpty() || sol.isEmpty()) {
                 continue;
             }
 
             if (operationNumber == 2) {
+                Integer expected = sol.removeFirst();
+                Integer actual   = st.removeFirst();
+
                 str.append("removeFirst()\n");
-                assertEquals(String.valueOf(str), stad1.removeFirst(), stad2.removeFirst());
+
+                assertEquals(String.valueOf(str), expected, actual);
             } else if (operationNumber == 3) {
+                Integer expected = sol.removeLast();
+                Integer actual   = st.removeLast();
+
                 str.append("removeLast()\n");
-                assertEquals(String.valueOf(str), stad1.removeLast(), stad2.removeLast());
+
+                assertEquals(String.valueOf(str), expected, actual);
             }
         }
 
