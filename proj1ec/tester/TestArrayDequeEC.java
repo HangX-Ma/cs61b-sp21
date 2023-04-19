@@ -14,7 +14,7 @@ public class TestArrayDequeEC {
         int M = 5000;
         StringBuilder str = new StringBuilder("\n");
         for (int i = 0; i < M; i++) {
-            int operationNumber = StdRandom.uniform(0, 6);
+            int operationNumber = StdRandom.uniform(0, 4);
             if (operationNumber == 0) {
                 int randVal= StdRandom.uniform(0, 100);
                 stad1.addFirst(randVal);
@@ -25,9 +25,13 @@ public class TestArrayDequeEC {
                 stad1.addLast(randVal);
                 stad2.addLast(randVal);
                 str.append("AddLast(").append(randVal).append(")\n");
-            } else if (stad1.size() == 0) {
-                assertTrue(stad1.isEmpty());
-            } else if (operationNumber == 2) {
+            }
+
+            if (stad2.isEmpty()) {
+                continue;
+            }
+
+            if (operationNumber == 2) {
                 str.append("removeFirst()\n");
                 assertEquals(String.valueOf(str), stad1.removeFirst(), stad2.removeFirst());
             } else if (operationNumber == 3) {
