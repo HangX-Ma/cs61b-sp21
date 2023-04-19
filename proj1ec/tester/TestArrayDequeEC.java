@@ -27,18 +27,19 @@ public class TestArrayDequeEC {
                 str.append("AddLast(").append(randVal).append(")\n");
             }
 
-            if (st.isEmpty() || sol.isEmpty()) {
+            if (st.size() == 0) {
+                assertEquals(st.isEmpty(), sol.isEmpty());
                 continue;
             }
 
-            if (operationNumber == 2) {
+            if (operationNumber == 2 && st.size() > 0 && sol.size() > 0) {
                 Integer expected = sol.removeFirst();
                 Integer actual   = st.removeFirst();
 
                 str.append("removeFirst()\n");
 
                 assertEquals(String.valueOf(str), expected, actual);
-            } else if (operationNumber == 3) {
+            } else if (operationNumber == 3 && st.size() > 0 && sol.size() > 0) {
                 Integer expected = sol.removeLast();
                 Integer actual   = st.removeLast();
 
