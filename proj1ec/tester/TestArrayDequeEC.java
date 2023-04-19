@@ -20,11 +20,13 @@ public class TestArrayDequeEC {
                 st.addFirst(randVal);
                 sol.addFirst(randVal);
                 str.append("AddFirst(").append(randVal).append(")\n");
+                assertEquals(String.valueOf(str), sol.get(sol.size() - 1), st.get(st.size() - 1));
             } else if (operationNumber == 1) {
                 int randVal= StdRandom.uniform(0, 100);
                 st.addLast(randVal);
                 sol.addLast(randVal);
                 str.append("AddLast(").append(randVal).append(")\n");
+                assertEquals(String.valueOf(str), sol.get(sol.size() - 1), st.get(st.size() - 1));
             }
 
             if (st.size() == 0) {
