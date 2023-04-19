@@ -29,7 +29,7 @@ If you want to code with VSCode, you can use this easy configuration. [config/te
 ## Projects
 
 - [x] Project 0: 2048
-- [ ] Project 1: Data Structures
+- [x] Project 1 (EC): Data Structures
 
 ## License
 
