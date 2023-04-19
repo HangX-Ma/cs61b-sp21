@@ -158,7 +158,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
             return true;
         }
 
-        if (!(o instanceof Deque)) {
+        if (!(o instanceof LinkedListDeque)) {
             return false;
         }
         /* <?> means unverified cast */
