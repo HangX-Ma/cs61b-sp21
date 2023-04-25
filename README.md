@@ -1,5 +1,7 @@
 # CS 61B Data Structures, Spring 2021
 
+- [x] :flushed: Stop this course learning since May because CS144 closer ties with my current work. Anyway, it will be finished by the end of the year!
+
 This is a repository contains CS61B labs and projects, which also records my self-learning process.
 
 > The Gradescope course activation code is MB7ZPY. You can enroll this class at [Grade Scope](www.gradescope.com).
