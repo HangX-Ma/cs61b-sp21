@@ -1,6 +1,8 @@
 # CS 61B Data Structures, Spring 2021
 
-- [x] :flushed: Stop this course learning since May because CS144 closer ties with my current work. Anyway, it will be finished by the end of the year!
+~~:flushed: Stop this course learning since May because CS144 closer ties with my current work. Anyway, it will be finished by the end of the year!~~
+
+Aha, I come back at the start of August in 2023! :rocket:
 
 This is a repository contains CS61B labs and projects, which also records my self-learning process.
 
