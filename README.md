@@ -1,8 +1,12 @@
 # CS 61B Data Structures, Spring 2021
 
+~~:flushed: Stop this course learning since May because CS144 closer ties with my current work. Anyway, it will be finished by the end of the year!~~
+
+Aha, I come back at the start of August in 2023! :rocket:
+
 This is a repository contains CS61B labs and projects, which also records my self-learning process.
 
-> The Gradescope course activation code is MB7ZPY. You can enroll this class at [Grade Scope](www.gradescope.com).
+> The Gradescope course activation code is MB7ZPY. You can enroll this class at [Grade Scope](https://www.gradescope.com).
 
 ## Configuration
 
@@ -11,7 +15,7 @@ This is a repository contains CS61B labs and projects, which also records my sel
   - Language Support for Java(TM) by Red Hat, Red Hat
   - Java Debugger, Don Jayamanne
 - IntelliJ Idea Extensions
-  - IdeaVim, JetBrains s.r.o. ([customed vim key mapping](https://gist.github.com/HangX-Ma/5966a45a65131c2b0275bdf2c936b782))
+  - IdeaVim, JetBrains s.r.o. ([customed vim key mapping](https://github.com/HangX-Ma/dotfiles/blob/main/idea/.ideavimrc))
 
 If you want to code with VSCode, you can use this easy configuration. [config/template-make.sh](config/template-make.sh) is provided to assist your project development. You can have a glance at it if you are interested it!
 
@@ -29,7 +33,7 @@ If you want to code with VSCode, you can use this easy configuration. [config/te
 ## Projects
 
 - [x] Project 0: 2048
-- [ ] Project 1: Data Structures
+- [x] Project 1 (EC): Data Structures
 
 ## License
 
