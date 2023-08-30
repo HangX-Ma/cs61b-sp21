@@ -10,7 +10,7 @@ import static capers.Utils.*;
 public class Dog { // TODO
 
     /** Folder that dogs live in. */
-    static final File DOG_FOLDER = null; // TODO (hint: look at the `join`
+    static final File DOG_FOLDER = join(".capers", "dog"); // TODO (hint: look at the `join`
                                          //      function in Utils)
 
     /** Age of dog. */
@@ -38,9 +38,10 @@ public class Dog { // TODO
      * @param name Name of dog to load
      * @return Dog read from file
      */
-    public static Dog fromFile(String name) {
+    public static Serializable fromFile(String name) {
         // TODO (hint: look at the Utils file)
-        return null;
+        File dogFile = join(DOG_FOLDER, name);
+        return readObject(dogFile, Dog.class.getClass());
     }
 
     /**
@@ -56,7 +57,8 @@ public class Dog { // TODO
      * Saves a dog to a file for future use.
      */
     public void saveDog() {
-        // TODO (hint: don't forget dog names are unique)
+        File newDogFile = join(DOG_FOLDER, this.name);
+        writeObject(newDogFile, this);
     }
 
     @Override
