@@ -10,7 +10,6 @@ import static gitlet.Utils.*;
  * @author HangX-Ma
  */
 public class SelfUilts {
-
     /**
      * System exit call with status code 0 and print message with args
      * @param msg print message
@@ -19,6 +18,12 @@ public class SelfUilts {
     public static void exit(String msg, Object... args) {
         message(msg, args);
         System.exit(0);
+    }
+
+    public static void rm(File file) {
+        if (!file.delete()) {
+            throw error(String.format("rm: failed to delete %s", file.getPath()));
+        }
     }
 
     /**

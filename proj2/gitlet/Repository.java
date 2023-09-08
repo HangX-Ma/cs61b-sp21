@@ -1,6 +1,11 @@
 package gitlet;
 
 import java.io.File;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static gitlet.SelfUilts.exit;
 import static gitlet.SelfUilts.mkdir;
@@ -15,38 +20,80 @@ import static gitlet.Utils.*;
  */
 public class Repository {
     /** The default branch name. */
-    public static final String DEAULT_BRANCH = "master";
+    private static final String DEAULT_BRANCH = "master";
 
     /** The current working directory. */
-    public static final File CWD = new File(System.getProperty("user.dir"));
+    private static final File CWD = new File(System.getProperty("user.dir"));
 
     /** The .gitlet directory. */
-    public static final File GITLET_DIR = join(CWD, ".gitlet");
+    private static final File GITLET_DIR = join(CWD, ".gitlet");
 
     /** The HEAD file: current activated branch, refs/heads/<name> */
-    public static final File HEAD = join(GITLET_DIR, "HEAD");
+    private static final File HEAD = join(GITLET_DIR, "HEAD");
 
     /** The HEAD file content: ref prefix */
-    public static final String HEAD_REF_PREFIX = "refs: refs/heads/";
+    private static final String HEAD_REF_PREFIX = "refs: refs/heads/";
+
+    /** The index file: track the files in .gitlet working directory */
+    public static final File INDEX = join(GITLET_DIR, "index");
 
     /** objects directory: record the committed files */
     public static final File OBJECTS_DIR = join(GITLET_DIR, "objects");
 
     /** refs directory */
-    public static final File REFS_DIR = join(GITLET_DIR, "refs");
+    private static final File REFS_DIR = join(GITLET_DIR, "refs");
 
     /** heads directory: record the git branches */
-    public static final File HEADS_DIR = join(REFS_DIR, "heads");
+    private static final File HEADS_DIR = join(REFS_DIR, "heads");
+
+    /** The files in current workspace folder */
+    private static File[] currentFiles;
+
+    /** The current branch */
+    private static String currentBranch;
+
+    /** The commit which the HEAD points to */
+    private static Commit headCommit;
+
+    /** The staging area instance */
+    private static StagingArea stagingArea;
+
+    public static void workspaceCheck() {
+        if (!(GITLET_DIR.exists() && GITLET_DIR.isDirectory())) {
+            exit("Not in an initialized Gitlet directory.");
+        }
+    }
+
+
+    public static void config() {
+        // init current files list
+        currentFiles = CWD.listFiles(File::isFile);
+
+        // init current branch
+        String headFileContent = readContentsAsString(HEAD);
+        currentBranch = headFileContent.replace(HEAD_REF_PREFIX, "");
+
+        // init head commit
+        headCommit = getBranchHeadCommit(currentBranch);
+
+        // init staging area
+        stagingArea = INDEX.exists()
+                ? StagingArea.fromFile()
+                : new StagingArea();
+        stagingArea.setTracked(headCommit.getTracked());
+    }
+
 
     /**
      * Initialize a repository at the current working directory.
      *
      * <pre>
      * .gitlet
-     * ├── HEAD
-     * ├── objects
-     * └── refs
-     *     └── heads
+     *  -- objects
+     *  -- refs
+     *   -- heads -> [branch name]
+     *  -- [HEAD]
+     *  -- [Index]
      * </pre>
      */
     public static void init() {
@@ -72,11 +119,90 @@ public class Repository {
     public static void initCommit() {
         Commit initialCommit = new Commit();
         initialCommit.save();
-        updateBranchHeadFileCommitId(DEAULT_BRANCH, initialCommit.getCommitId());
+        setBranchHeadCommit(DEAULT_BRANCH, initialCommit.getCommitId());
     }
 
-    private static void updateBranchHeadFileCommitId(String branch, String commitId) {
-        File branchHeadFile = join(HEADS_DIR, branch);
-        writeObject(branchHeadFile, commitId);
+    /**
+     * Set branch head.
+     *
+     * @param branch branch name
+     * @param commitId Commit SHA1 id
+     */
+    private static void setBranchHeadCommit(String branch, String commitId) {
+        File branchHeadFile = getBranchHeadFile(branch);
+        setBranchHeadCommit(branchHeadFile, commitId);
+    }
+
+
+    private static void setBranchHeadCommit(File branchHeadFile, String commitId) {
+        writeContents(branchHeadFile, commitId);
+    }
+
+    /**
+     * Add file to the staging area
+     *
+     * @param fileName file name
+     */
+    public static void add(String fileName) {
+        File file = getFileFromCWD(fileName);
+        if (!file.exists()) {
+            exit("File does not exist.");
+        }
+        if (stagingArea.add(file)) {
+            stagingArea.save();
+        }
+
+    }
+
+    /**
+     * Get files from current working directory
+     *
+     * @param fileName file name
+     * @return File instance
+     */
+    private static File getFileFromCWD(String fileName) {
+        return Paths.get(fileName).isAbsolute()
+                ? new File(fileName)
+                : join(CWD, fileName);
+    }
+
+    /**
+     * Get head commit of this branch
+     *
+     * @param branch branch name
+     * @return Commit instance
+     */
+    private static Commit getBranchHeadCommit(String branch) {
+        File branchHeadFile = getBranchHeadFile(branch);
+        return getBranchHeadCommit(branchHeadFile);
+    }
+
+    private static Commit getBranchHeadCommit(File branchHeadFile) {
+        String headCommitId = readContentsAsString(branchHeadFile);
+        return Commit.FromFile(headCommitId);
+    }
+
+    /**
+     * Get branch file
+     *
+     * @param branch branch name
+     * @return the branch file
+     */
+    private static File getBranchHeadFile(String branch) {
+        return join(HEADS_DIR, branch);
+    }
+
+    public static void commit(String msg) {
+        if (stagingArea.isEmpty()) {
+            exit("No changes added to the commit.");
+        }
+        Map<String, String> newTrackedFilesMap = stagingArea.commit();
+        stagingArea.save();
+        List<String> parents = new ArrayList<>();
+        parents.add(headCommit.getCommitId());
+
+        Commit newCommit = new Commit(msg, parents, newTrackedFilesMap);
+        newCommit.save();
+        setBranchHeadCommit(currentBranch, newCommit.getCommitId());
     }
 }

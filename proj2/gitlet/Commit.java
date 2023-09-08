@@ -7,6 +7,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static gitlet.Utils.readObject;
 import static gitlet.Utils.sha1;
 import static gitlet.SelfUilts.*;
 
@@ -29,11 +30,11 @@ public class Commit implements Serializable {
     /** The parent commits SHA1 id */
     private final List<String> parents;
 
-    /** The corresponding blob file according to SHA1 id */
+    /** The corresponding commit type file according to SHA1 id */
     private final File file;
 
     /** The tracked files */
-    private final HashMap<String/* Path */, String/* SHA1 id */> tracked;
+    private final Map<String/* Path */, String/* SHA1 id */> tracked;
 
     /**
      * initial commit
@@ -47,7 +48,7 @@ public class Commit implements Serializable {
         this.file = getObjectFile(id);
     }
 
-    public Commit(String message, List<String>parents, HashMap<String, String> tracked) {
+    public Commit(String message, List<String>parents, Map<String, String> tracked) {
         date = new Date();
         this.message = message;
         this.parents = parents;
@@ -58,13 +59,13 @@ public class Commit implements Serializable {
 
     /** Create a new SHA1 id for current commit */
     private String createCommitId() {
-        return sha1(getTimestamp(), message, parents.toString(), tracked.toString());
+        return sha1(tracked.toString(), parents.toString(), getTimestamp(), message);
     }
 
     /** Get timestamp according to the saved date */
     private String getTimestamp() {
         // Thu Jan 1 00:00:00 1970 +0000
-        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, MMMM, dd MMMM yyyy", Locale.ENGLISH);
+        DateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy z", Locale.ENGLISH);
         return dateFormat.format(this.date);
     }
 
@@ -78,4 +79,18 @@ public class Commit implements Serializable {
         saveObjectFile(file, this);
     }
 
+    /**
+     * Get Commit instance from object file
+     *
+     * @param id SHA1 id
+     * @return Commit instance
+     */
+    public static Commit FromFile(String id) {
+        return readObject(getObjectFile(id), Commit.class);
+    }
+
+    /** Get tracked file map */
+    public Map<String, String> getTracked() {
+        return tracked;
+    }
 }
