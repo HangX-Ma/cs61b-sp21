@@ -37,6 +37,17 @@ public class Main {
                 }
                 new Repository().commit(commitMsg);
             }
+            case "rm" -> {
+                Repository.workspaceCheck();
+                argsLengthCheck(args, 2);
+                String fileName = args[1];
+                new Repository().remove(fileName);
+            }
+            case "log" -> {
+                Repository.workspaceCheck();
+                argsLengthCheck(args, 1);
+                new Repository().log();
+            }
             // TODO: FILL THE REST IN
             default -> exit("No command with that name exits.");
         }

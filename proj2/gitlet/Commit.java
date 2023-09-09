@@ -65,7 +65,7 @@ public class Commit implements Serializable {
     /** Get timestamp according to the saved date */
     private String getTimestamp() {
         // Thu Jan 1 00:00:00 1970 +0000
-        DateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy z", Locale.ENGLISH);
+        DateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.ENGLISH);
         return dateFormat.format(this.date);
     }
 
@@ -81,7 +81,7 @@ public class Commit implements Serializable {
      * @param id SHA1 id
      * @return Commit instance
      */
-    public static Commit FromFile(String id) {
+    public static Commit fromFile(String id) {
         return readObject(getObjectFile(id), Commit.class);
     }
 
@@ -90,8 +90,30 @@ public class Commit implements Serializable {
         return id;
     }
 
+    /** Get this commit parents */
+    public List<String> getParents() {
+        return parents;
+    }
+
     /** Get tracked file map */
     public Map<String, String> getTracked() {
         return tracked;
+    }
+
+    public String getLog() {
+        StringBuilder logBuilder = new StringBuilder();
+        logBuilder.append("===").append("\n");
+        logBuilder.append("commit ").append(id).append("\n");
+        if (parents.size() > 1) {
+            logBuilder.append("Merge: ");
+            for (String parent: parents) {
+                logBuilder.append(" ").append(parent, 0, 7);
+            }
+            logBuilder.append("\n");
+        }
+        logBuilder.append("Date: ").append(getTimestamp()).append("\n");
+        logBuilder.append(message).append("\n");
+
+        return logBuilder.toString();
     }
 }

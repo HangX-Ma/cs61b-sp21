@@ -176,7 +176,7 @@ public class Repository {
 
     private static Commit getBranchHeadCommit(File branchHeadFile) {
         String headCommitId = readContentsAsString(branchHeadFile);
-        return Commit.FromFile(headCommitId);
+        return Commit.fromFile(headCommitId);
     }
 
     /**
@@ -189,6 +189,11 @@ public class Repository {
         return join(HEADS_DIR, branch);
     }
 
+    /**
+     * Perform a commit with specific message
+     *
+     * @param msg message
+     */
     public void commit(String msg) {
         if (stagingArea.isEmpty()) {
             exit("No changes added to the commit.");
@@ -201,5 +206,34 @@ public class Repository {
         Commit newCommit = new Commit(msg, parents, newTrackedFilesMap);
         newCommit.save();
         setBranchHeadCommit(currentBranch, newCommit.getCommitId());
+    }
+
+    /**
+     * Remove file
+     *
+     * @param fileName file name
+     */
+    public void remove(String fileName) {
+        File file = getFileFromCWD(fileName);
+        if (stagingArea.remove(file)) {
+            stagingArea.save();
+        } else {
+            exit("No reason to remove the file.");
+        }
+    }
+
+    /** Print gitlet log */
+    public void log() {
+        StringBuilder logBuilder = new StringBuilder();
+        Commit currentCommit = headCommit;
+        while (true) {
+            logBuilder.append(currentCommit.getLog()).append("\n");
+            List<String> parentCommitIds = currentCommit.getParents();
+            if (parentCommitIds.size() == 0) {
+                break;
+            }
+            currentCommit = Commit.fromFile(parentCommitIds.get(0));
+        }
+        System.out.println(logBuilder);
     }
 }
