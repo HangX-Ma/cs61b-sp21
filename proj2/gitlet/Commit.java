@@ -41,11 +41,11 @@ public class Commit implements Serializable {
      */
     public Commit() {
         date = new Date(0); // allocate time since "the epoch"
-        this.message = "initial commit";
-        this.parents = new ArrayList<>();
-        this.tracked = new HashMap<>();
-        this.id = createCommitId();
-        this.file = getObjectFile(id);
+        message = "initial commit";
+        parents = new ArrayList<>();
+        tracked = new HashMap<>();
+        id = createCommitId();
+        file = getObjectFile(id);
     }
 
     public Commit(String message, List<String>parents, Map<String, String> tracked) {
@@ -53,8 +53,8 @@ public class Commit implements Serializable {
         this.message = message;
         this.parents = parents;
         this.tracked = tracked;
-        this.id = createCommitId();
-        this.file = getObjectFile(id);
+        id = createCommitId();
+        file = getObjectFile(id);
     }
 
     /** Create a new SHA1 id for current commit */
@@ -69,10 +69,6 @@ public class Commit implements Serializable {
         return dateFormat.format(this.date);
     }
 
-    /** Get this commit SHA1 id */
-    public String getCommitId() {
-        return id;
-    }
 
     /** Save the object file */
     public void save() {
@@ -87,6 +83,11 @@ public class Commit implements Serializable {
      */
     public static Commit FromFile(String id) {
         return readObject(getObjectFile(id), Commit.class);
+    }
+
+    /** Get this commit SHA1 id */
+    public String getCommitId() {
+        return id;
     }
 
     /** Get tracked file map */

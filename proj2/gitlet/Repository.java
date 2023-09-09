@@ -3,7 +3,6 @@ package gitlet;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,8 +63,7 @@ public class Repository {
         }
     }
 
-
-    public static void config() {
+    public Repository() {
         // init current files list
         currentFiles = CWD.listFiles(File::isFile);
 
@@ -82,7 +80,6 @@ public class Repository {
                 : new StagingArea();
         stagingArea.setTracked(headCommit.getTracked());
     }
-
 
     /**
      * Initialize a repository at the current working directory.
@@ -101,8 +98,8 @@ public class Repository {
             exit("A Gitlet version-control system already exists in the current directory.");
         }
         mkdir(GITLET_DIR);
-        mkdir(REFS_DIR);
         mkdir(OBJECTS_DIR);
+        mkdir(REFS_DIR);
         mkdir(HEADS_DIR);
         setCurrentBranch(DEAULT_BRANCH);
         initCommit();
@@ -143,7 +140,7 @@ public class Repository {
      *
      * @param fileName file name
      */
-    public static void add(String fileName) {
+    public void add(String fileName) {
         File file = getFileFromCWD(fileName);
         if (!file.exists()) {
             exit("File does not exist.");
@@ -192,7 +189,7 @@ public class Repository {
         return join(HEADS_DIR, branch);
     }
 
-    public static void commit(String msg) {
+    public void commit(String msg) {
         if (stagingArea.isEmpty()) {
             exit("No changes added to the commit.");
         }

@@ -13,13 +13,13 @@ import static gitlet.Utils.writeObject;
 
 public class StagingArea implements Serializable {
     /** The added files */
-    private static final Map<String/*Path*/, String/* SHA1 id */> added = new HashMap<>();
+    private final Map<String/*Path*/, String/* SHA1 id */> added = new HashMap<>();
 
     /** The removed files */
-    private static final Set<String/* Path */> removed = new HashSet<>();
+    private final Set<String/* Path */> removed = new HashSet<>();
 
     /** The tracked files */
-    private static transient Map<String/* Path */, String/* SHA1 id */> tracked;
+    private transient Map<String/* Path */, String/* SHA1 id */> tracked;
 
     /** Set staging area from INDEX file */
     public static StagingArea fromFile() {
@@ -32,12 +32,12 @@ public class StagingArea implements Serializable {
     }
 
     /** Get the added files Map */
-    public static Map<String, String> getAddedFiles() {
+    public Map<String, String> getAddedFiles() {
         return added;
     }
 
     /** Get the added files Set */
-    public static Set<String> getRemoved() {
+    public Set<String> getRemoved() {
         return removed;
     }
 
@@ -79,6 +79,7 @@ public class StagingArea implements Serializable {
      */
     public boolean add(File file) {
         String filePath = file.getPath();
+
         Blob blob = new Blob(file);
         String blobId = blob.getBlobId();
 

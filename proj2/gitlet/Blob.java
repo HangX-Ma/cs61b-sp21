@@ -10,16 +10,16 @@ import static gitlet.Utils.*;
 
 public class Blob implements Serializable {
     /** The source file that will be converted to blob */
-    private static File source;
+    private final File source;
 
     /** The content of the source file */
-    private static byte[] content;
+    private final byte[] content;
 
     /** SHA1 id generated from the source file content */
-    private static String id;
+    private final String id;
 
     /** The corresponding blob type file according to SHA1 id */
-    private static File file;
+    private final File file;
 
     public Blob(File sourceFile) {
         source = sourceFile;
@@ -29,16 +29,11 @@ public class Blob implements Serializable {
     }
 
     /** The blob file create SHA1 id only according to the source file content and size */
-    private String createBlobId(File sourceFile) {
+    private static String createBlobId(File sourceFile) {
         String filePath = sourceFile.getPath();
         long fileLen = sourceFile.length();
         byte[] fileContent = readContents(sourceFile);
         return sha1(filePath, Long.toString(fileLen), Arrays.toString(fileContent));
-    }
-
-    /** Get this blob file SHA1 id */
-    public String getBlobId() {
-        return id;
     }
 
     /**
@@ -50,10 +45,22 @@ public class Blob implements Serializable {
     public static Blob fromFile(String id) {
         return readObject(getObjectFile(id), Blob.class);
     }
+    /**
+     * Write the file content back to the source file.
+     */
+    public void writeContentToSource() {
+        writeContents(source, content);
+    }
 
     /** save this blob instance to the file in objects folder */
     public void save() {
         saveObjectFile(file, this);
+    }
+
+
+    /** Get this blob file SHA1 id */
+    public String getBlobId() {
+        return id;
     }
 
     public File getFile() {

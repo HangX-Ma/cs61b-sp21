@@ -1,7 +1,5 @@
 package gitlet;
 
-import java.util.ResourceBundle;
-
 import static gitlet.SelfUilts.exit;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
@@ -23,14 +21,12 @@ public class Main {
             case "init" -> {
                 argsLengthCheck(args, 1);
                 Repository.init();
-                Repository.config();
             }
             case "add" -> {
                 Repository.workspaceCheck();
                 argsLengthCheck(args, 2);
                 String fileName = args[1];
-                Repository.config();
-                Repository.add(fileName);
+                new Repository().add(fileName);
             }
             case "commit" -> {
                 Repository.workspaceCheck();
@@ -39,8 +35,7 @@ public class Main {
                 if (commitMsg.isEmpty()) {
                     exit("Please enter a commit message.");
                 }
-                Repository.config();
-                Repository.commit(commitMsg);
+                new Repository().commit(commitMsg);
             }
             // TODO: FILL THE REST IN
             default -> exit("No command with that name exits.");
