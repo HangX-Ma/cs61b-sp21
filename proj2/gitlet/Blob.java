@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static gitlet.SelfUilts.getObjectFile;
@@ -29,7 +30,7 @@ public class Blob implements Serializable {
     }
 
     /** The blob file create SHA1 id only according to the source file content and size */
-    private static String createBlobId(File sourceFile) {
+    public static String createBlobId(File sourceFile) {
         String filePath = sourceFile.getPath();
         long fileLen = sourceFile.length();
         byte[] fileContent = readContents(sourceFile);
@@ -45,6 +46,16 @@ public class Blob implements Serializable {
     public static Blob fromFile(String id) {
         return readObject(getObjectFile(id), Blob.class);
     }
+
+    /**
+     * Get the blob content as String.
+     *
+     * @return Blob content
+     */
+    public String getContentAsString() {
+        return new String(content, StandardCharsets.UTF_8);
+    }
+
     /**
      * Write the file content back to the source file.
      */

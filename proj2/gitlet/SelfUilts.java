@@ -1,5 +1,7 @@
 package gitlet;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import static gitlet.Utils.*;
@@ -65,7 +67,7 @@ public class SelfUilts {
      *
      * @param id commit hash id
      */
-    private static String getObjectDirName(String id) {
+    public static String getObjectDirName(String id) {
         return id.substring(0, 2);
     }
 
@@ -75,8 +77,22 @@ public class SelfUilts {
      * @param id commit hash id
      * @return one object name in one specific object folder
      */
-    private static String getObjectFileName(String id) {
+    public static String getObjectFileName(String id) {
         return id.substring(2);
     }
 
+    /**
+     * Tells if the deserialized object instance of given class.
+     *
+     * @param file File instance
+     * @param c    Target class
+     * @return true if is instance
+     */
+    public static boolean isFileInstanceOf(File file, Class<?> c) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+            return c.isInstance(in.readObject());
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
 }

@@ -54,6 +54,12 @@ public class StagingArea implements Serializable {
         return added.isEmpty() && removed.isEmpty();
     }
 
+    /** Clear the added and removed files */
+    public void clear() {
+        added.clear();
+        removed.clear();
+    }
+
     /**
      * Perform a  commit
      *
@@ -64,8 +70,7 @@ public class StagingArea implements Serializable {
          for (String filePath : removed) {
              tracked.remove(filePath);
          }
-         added.clear();
-         removed.clear();
+         clear();
 
          return tracked;
     }

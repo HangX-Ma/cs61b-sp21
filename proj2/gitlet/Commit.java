@@ -116,4 +116,33 @@ public class Commit implements Serializable {
 
         return logBuilder.toString();
     }
+
+    /** Get the store message that describes this commit */
+    public String getMessage() {
+        return message;
+    }
+
+    /** Get date */
+    public Date getDate() {
+        return date;
+    }
+
+    /** restore the tracked file */
+    public boolean restoreChecked(String filePath) {
+        String blobId = tracked.get(filePath);
+        if (blobId == null) {
+            return false;
+        }
+        Blob.fromFile(blobId).writeContentToSource();
+        return true;
+    }
+
+    /**
+     * Restore all tracked files, overwriting the existing ones.
+     */
+    public void restoreAllTracked() {
+        for (String blobId : tracked.values()) {
+            Blob.fromFile(blobId).writeContentToSource();
+        }
+    }
 }
