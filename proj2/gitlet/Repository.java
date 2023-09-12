@@ -367,7 +367,7 @@ public class Repository {
         for (String filePath : modifiedNotStagedFiles) {
             String fileName = Paths.get(filePath).getFileName().toString();
             statusBuilder.append(fileName);
-            if (deletedNotStagedFiles.contains(fileName)) {
+            if (deletedNotStagedFiles.contains(filePath)) {
                 statusBuilder.append(" (deleted)").append("\n");
             } else {
                 statusBuilder.append(" (modified)").append("\n");
@@ -412,7 +412,6 @@ public class Repository {
      */
     private Map<String, String> getCurrentFilesMap() {
         // update current file list
-        currentFiles = CWD.listFiles(File::isFile);
         Map<String, String> filesMap = new HashMap<>();
         for (File file : currentFiles) {
             String filePath = file.getPath();
@@ -425,7 +424,7 @@ public class Repository {
     /** Checkout file from HEAD commit */
     public void checkout(String fileName) {
         String filePath = getFileFromCWD(fileName).getPath();
-        if(!headCommit.restoreChecked(filePath)) {
+        if (!headCommit.restoreChecked(filePath)) {
             exit("File does not exist in that commit.");
         }
     }
@@ -518,7 +517,8 @@ public class Repository {
             String blobId = currentFilesMap.get(filePath);
             String targetBlobId = targetCommitTrackedFilesMap.get(filePath);
             if (!blobId.equals(targetBlobId)) {
-                exit("There is an untracked file in the way; delete it, or add and commit it first.");
+                exit("There is an untracked file in the way; " +
+                        "delete it, or add and commit it first.");
             }
         }
     }
@@ -603,21 +603,29 @@ public class Repository {
 
         boolean ifConflict = false;
 
-        Map<String, String> headCommitTrackedFilesMap = new HashMap<>(headCommit.getTracked());
-        Map<String, String> targetBranchHeadCommitTrackedFilesMap = targetBranchHeadCommit.getTracked();
-        Map<String, String> latestAncestorCommitTrackedFilesMap = latestAncestorCommit.getTracked();
+        Map<String, String> headCommitTrackedFilesMap =
+                new HashMap<>(headCommit.getTracked());
 
-        for (Map.Entry<String, String> entry : latestAncestorCommitTrackedFilesMap.entrySet()) {
+        Map<String, String> targetBranchHeadCommitTrackedFilesMap =
+                targetBranchHeadCommit.getTracked();
+
+        Map<String, String> latestAncestorCommitTrackedFilesMap =
+                latestAncestorCommit.getTracked();
+
+        for (Map.Entry<String, String> entry
+             : latestAncestorCommitTrackedFilesMap.entrySet())
+        {
             String filePath = entry.getKey();
             String blobId = entry.getValue();
             File file = new File(filePath);
 
             String headCommitBlobId = headCommitTrackedFilesMap.get(filePath);
-            String targetBranchHeadCommitBlobId = targetBranchHeadCommitTrackedFilesMap.get(filePath);
+            String targetBranchHeadCommitBlobId =
+                    targetBranchHeadCommitTrackedFilesMap.get(filePath);
 
-            if (targetBranchHeadCommitBlobId != null) {
+            if (targetBranchHeadCommitBlobId != null) { // exists in the target branch
                 if (!targetBranchHeadCommitBlobId.equals(blobId)) { // modified in target branch
-                    if (headCommitBlobId != null) {
+                    if (headCommitBlobId != null) { // exists in the current branch
                         if (headCommitBlobId.equals(blobId)) { // not modified in current branch
                             // case 1
                             Blob.fromFile(targetBranchHeadCommitBlobId).writeContentToSource();
@@ -642,13 +650,13 @@ public class Repository {
                         writeContents(file, conflictContent);
                         stagingArea.add(file);
                     }
-                }
-                // else not modified in the target branch
-                // case 2 and case 7
+                } // else not modified in the target branch
+                // case 7
+                // case 2
             } else { // deleted in the target branch
-                if (headCommitBlobId != null) {
+                if (headCommitBlobId != null) { // exists in the current branch
                     if (headCommitBlobId.equals(blobId)) { // not modified in current branch
-                        // case 6, remove it
+                        // case 6, remove it and untracked
                         stagingArea.remove(file);
                     } else { // modified in current branch
                         // case 8
@@ -661,17 +669,19 @@ public class Repository {
                 } // else deleted in both branch
                 // case 3
             }
-
             headCommitTrackedFilesMap.remove(filePath);
             targetBranchHeadCommitTrackedFilesMap.remove(filePath);
         }
 
-        for (Map.Entry<String, String> entry : targetBranchHeadCommitTrackedFilesMap.entrySet()) {
+        for (Map.Entry<String, String> entry
+                : targetBranchHeadCommitTrackedFilesMap.entrySet())
+        {
             String targetBranchHeadCommitFilePath = entry.getKey();
             String targetBranchHeadCommitBlobId = entry.getValue();
             File targetBranchHeadCommitFile = new File(targetBranchHeadCommitFilePath);
 
-            String headCommitBlobId = headCommitTrackedFilesMap.get(targetBranchHeadCommitFilePath);
+            String headCommitBlobId =
+                    headCommitTrackedFilesMap.get(targetBranchHeadCommitFilePath);
 
             if (headCommitBlobId != null) { // added in both branches
                 if (!headCommitBlobId.equals(targetBranchHeadCommitBlobId)) { // modified in different ways
