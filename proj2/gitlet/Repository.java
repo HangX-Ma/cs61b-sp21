@@ -1,8 +1,5 @@
 package gitlet;
 
-import edu.princeton.cs.algs4.ST;
-import edu.princeton.cs.algs4.StdIn;
-
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
@@ -237,7 +234,7 @@ public class Repository {
         while (true) {
             logBuilder.append(currentCommit.getLog()).append("\n");
             List<String> parentCommitIds = currentCommit.getParents();
-            if (parentCommitIds.size() == 0) {
+            if (parentCommitIds.isEmpty()) {
                 break;
             }
             currentCommit = Commit.fromFile(parentCommitIds.get(0));
@@ -313,11 +310,9 @@ public class Repository {
         statusBuilder.append("=== Branches ===").append("\n");
         statusBuilder.append("*").append(currentBranch).append("\n");
         String[] branchNames = HEADS_DIR.list((dir, name) -> !name.equals(currentBranch));
-        if (branchNames != null) {
-            Arrays.sort(branchNames);
-            for (String branch : branchNames) {
-                statusBuilder.append(branch).append("\n");
-            }
+        Arrays.sort(branchNames);
+        for (String branch : branchNames) {
+            statusBuilder.append(branch).append("\n");
         }
         statusBuilder.append("\n");
 
@@ -348,7 +343,7 @@ public class Repository {
 
         // remove the staged removed files
         for (String filePath : removedFiles) {
-            trackedFilesMap.remove(removedFiles);
+            trackedFilesMap.remove(filePath);
         }
 
         for (Map.Entry<String, String> entry : trackedFilesMap.entrySet()) {
@@ -385,7 +380,7 @@ public class Repository {
         appendFilesInOrder(statusBuilder, currentFilesMap.keySet());
         statusBuilder.append("\n");
 
-        System.out.println(statusBuilder);
+        System.out.print(statusBuilder);
     }
 
     /**
@@ -461,7 +456,8 @@ public class Repository {
             String objectFileNamePrefix = getObjectFileName(commitId);
             for (File objectFile : objectDir.listFiles()) {
                 String objectFileName = objectFile.getName();
-                if (objectFileName.startsWith(objectFileNamePrefix) && isFileInstanceOf(objectFile, Commit.class)) {
+                if (objectFileName.startsWith(objectFileNamePrefix)
+                        && isFileInstanceOf(objectFile, Commit.class)) {
                     if (ifFound) {
                         exit("More than 1 commit has the same id prefix.");
                     }
@@ -592,7 +588,7 @@ public class Repository {
         Commit targetBranchHeadCommit = getBranchHeadCommit(targetBranchFile);
         checkUncheckedFiles(targetBranchHeadCommit);
 
-        Commit latestAncestorCommit = getLatestAncestorCommit(targetBranchHeadCommit, headCommit);
+        Commit latestAncestorCommit = getLatestAncestorCommit(headCommit, targetBranchHeadCommit);
         String latestAncestorCommitId = latestAncestorCommit.getCommitId();
 
         if (latestAncestorCommitId.equals(targetBranchHeadCommit.getCommitId())) {
@@ -607,7 +603,7 @@ public class Repository {
 
         boolean ifConflict = false;
 
-        Map<String, String> headCommitTrackedFilesMap = headCommit.getTracked();
+        Map<String, String> headCommitTrackedFilesMap = new HashMap<>(headCommit.getTracked());
         Map<String, String> targetBranchHeadCommitTrackedFilesMap = targetBranchHeadCommit.getTracked();
         Map<String, String> latestAncestorCommitTrackedFilesMap = latestAncestorCommit.getTracked();
 
@@ -628,9 +624,10 @@ public class Repository {
                             stagingArea.add(file);
                         } else { // modified in current branch
                             if (!headCommitBlobId.equals(targetBranchHeadCommitBlobId)) {
-                                // case 8, both branch modified the same file to different content, leading to confict.
+                                // case 8, both branch modified the same file to different content, leading to conflict.
                                 ifConflict = true;
-                                String conflictContent = getConflictContent(headCommitBlobId, targetBranchHeadCommitBlobId);
+                                String conflictContent =
+                                        getConflictContent(headCommitBlobId, targetBranchHeadCommitBlobId);
                                 writeContents(file, conflictContent);
                                 stagingArea.add(file);
                             }
@@ -638,9 +635,10 @@ public class Repository {
                             // case 3, do nothing
                         }
                     } else { // deleted in current branch
-                        // case 3
+                        // case 8
                         ifConflict = true;
-                        String conflictContent = getConflictContent(null, targetBranchHeadCommitBlobId);
+                        String conflictContent =
+                                getConflictContent(null, targetBranchHeadCommitBlobId);
                         writeContents(file, conflictContent);
                         stagingArea.add(file);
                     }
@@ -655,7 +653,8 @@ public class Repository {
                     } else { // modified in current branch
                         // case 8
                         ifConflict = true;
-                        String conflictContent = getConflictContent(headCommitBlobId, null);
+                        String conflictContent =
+                                getConflictContent(headCommitBlobId, null);
                         writeContents(file, conflictContent);
                         stagingArea.add(file);
                     }
@@ -668,29 +667,31 @@ public class Repository {
         }
 
         for (Map.Entry<String, String> entry : targetBranchHeadCommitTrackedFilesMap.entrySet()) {
-            String filePath = entry.getKey();
-            String blobId = entry.getValue();
-            File file = new File(filePath);
+            String targetBranchHeadCommitFilePath = entry.getKey();
+            String targetBranchHeadCommitBlobId = entry.getValue();
+            File targetBranchHeadCommitFile = new File(targetBranchHeadCommitFilePath);
 
-            String headCommitBlobId = headCommitTrackedFilesMap.get(filePath);
+            String headCommitBlobId = headCommitTrackedFilesMap.get(targetBranchHeadCommitFilePath);
 
             if (headCommitBlobId != null) { // added in both branches
-                if (!headCommitBlobId.equals(blobId)) { // modified in different ways
+                if (!headCommitBlobId.equals(targetBranchHeadCommitBlobId)) { // modified in different ways
                     // case 8
                     ifConflict = true;
-                    String conflictContent = getConflictContent(headCommitBlobId, blobId);
-                    writeContents(file, conflictContent);
-                    stagingArea.add(file);
+                    String conflictContent =
+                            getConflictContent(headCommitBlobId, targetBranchHeadCommitBlobId);
+                    writeContents(targetBranchHeadCommitFile, conflictContent);
+                    stagingArea.add(targetBranchHeadCommitFile);
                 } // else modified in the same ways
                 // case 3
             } else { // only added in the target branch
                 // case 5
-                Blob.fromFile(blobId).writeContentToSource();
-                stagingArea.add(file);
+                Blob.fromFile(targetBranchHeadCommitBlobId).writeContentToSource();
+                stagingArea.add(targetBranchHeadCommitFile);
             }
         }
 
-        String newCommitMessage = "Merged" + " " + targetBranchName + " " + "into" + " " + currentBranch + ".";
+        String newCommitMessage =
+                "Merged" + " " + targetBranchName + " " + "into" + " " + currentBranch + ".";
         commit(newCommitMessage, targetBranchHeadCommit.getCommitId());
 
         if (ifConflict) {
@@ -713,7 +714,8 @@ public class Repository {
 
         while (true) {
             Commit latestCommit = commitPriorityQueue.poll();
-            String firstParentId = latestCommit.getParents().get(0);
+            List<String> parentCommitIds = latestCommit.getParents();
+            String firstParentId = parentCommitIds.get(0);
             Commit firstParentCommit = Commit.fromFile(firstParentId);
             if (checkedCommitId.contains(firstParentId)) {
                 return firstParentCommit;
@@ -723,7 +725,8 @@ public class Repository {
         }
     }
 
-    private String getConflictContent(String currentBranchCommitBlobId, String targetBranchCommitBlobId) {
+    private String getConflictContent(String currentBranchCommitBlobId,
+                                      String targetBranchCommitBlobId) {
         StringBuilder contentBuilder = new StringBuilder();
         contentBuilder.append("<<<<<<< HEAD").append("\n");
         if (currentBranchCommitBlobId != null) {

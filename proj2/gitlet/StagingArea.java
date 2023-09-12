@@ -66,13 +66,13 @@ public class StagingArea implements Serializable {
      * @return tracked files Map
      */
     public Map<String, String> commit() {
-         tracked.putAll(added);
-         for (String filePath : removed) {
-             tracked.remove(filePath);
-         }
-         clear();
+        tracked.putAll(added);
+        for (String filePath : removed) {
+            tracked.remove(filePath);
+        }
+        clear();
 
-         return tracked;
+        return tracked;
     }
 
 

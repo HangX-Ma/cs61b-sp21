@@ -12,7 +12,6 @@ import static gitlet.Utils.sha1;
 import static gitlet.SelfUilts.*;
 
 /** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
  *  @author HangX-Ma
@@ -48,7 +47,7 @@ public class Commit implements Serializable {
         file = getObjectFile(id);
     }
 
-    public Commit(String message, List<String>parents, Map<String, String> tracked) {
+    public Commit(String message, List<String> parents, Map<String, String> tracked) {
         date = new Date();
         this.message = message;
         this.parents = parents;
