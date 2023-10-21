@@ -1,13 +1,21 @@
 package byow.Core;
 
+import byow.InputDemo.StringInputDevice;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
+
+import java.util.List;
+
+import static byow.Core.Utils.parseCommandL;
+import static byow.Core.Utils.parseCommandN;
 
 public class Engine {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
+
+    Property property = new Property();
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
@@ -45,8 +53,43 @@ public class Engine {
         //
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
-
         TETile[][] finalWorldFrame = null;
+        StringBuilder inputBuilder = new StringBuilder();
+
+        /* Make input case-insensitive */
+        char[] lowerCaseInput = input.toLowerCase().toCharArray();
+
+        /* Check the input to ensure it fits the key set requirement. */
+        for (char c : lowerCaseInput) {
+            if (!Utils.numberSet.contains(c) && !Utils.symbolSet.contains(c)) {
+                continue;
+            }
+            inputBuilder.append(c);
+        }
+
+        /* retrieve information from neInput */
+        String newInput = inputBuilder.toString();
+        char action = newInput.charAt(0);
+        String commands = newInput.substring(1);
+
+        Pair<Long, List<Character>> parsedCommands = null;
+        switch (action) {
+            case 'n' -> {
+                parsedCommands = parseCommandN(commands);
+            }
+            case 'l' -> {
+                parsedCommands = parseCommandL(commands);
+            }
+        }
         return finalWorldFrame;
+    }
+
+    static public void main(String[] args) {
+        Engine engine = new Engine();
+        String input1 = "n24958091840518SsswwWaasssSsdD:q";
+        String input2 = "laasssSsdD:q";
+        String input3 = "laasssSsdD";
+        String input4 = "n2440518SsswwWaasss";
+        engine.interactWithInputString(input1);
     }
 }
