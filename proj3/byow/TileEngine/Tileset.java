@@ -17,9 +17,18 @@ import java.awt.Color;
  */
 
 public class Tileset {
+    static Color azure4 = new Color(131, 139, 139);
+    static Color slateBlue4 = new Color(71, 60, 139);
+    static Color beige = new Color(245, 245, 220);
+    static Color mistyRose = new Color(255, 228, 225);
+    static Color lavender = new Color(230, 230, 250);
+    static Color wheat = new Color(245, 222, 179);
+
     public static final TETile AVATAR = new TETile('@', Color.white, Color.black, "you");
-    public static final TETile WALL = new TETile('#', new Color(216, 128, 128), Color.darkGray,
-            "wall");
+    public static final TETile WALL1 = new TETile('#', Color.black, beige, "wall1");
+    public static final TETile WALL2 = new TETile('#', Color.black, mistyRose, "wall2");
+    public static final TETile WALL3 = new TETile('#', Color.black, lavender, "wall3");
+    public static final TETile WALL4 = new TETile('#', Color.black, wheat, "wall4");
     public static final TETile FLOOR = new TETile('·', new Color(128, 192, 128), Color.black,
             "floor");
     public static final TETile NOTHING = new TETile(' ', Color.black, Color.black, "nothing");
@@ -34,7 +43,7 @@ public class Tileset {
     public static final TETile MOUNTAIN = new TETile('▲', Color.gray, Color.black, "mountain");
     public static final TETile TREE = new TETile('♠', Color.green, Color.black, "tree");
     // user added
-    public static final TETile ROOM = new TETile('·', Color.darkGray, Color.black, "room");
+    public static final TETile ROOM = new TETile('·', azure4, slateBlue4, "room");
 }
 
 

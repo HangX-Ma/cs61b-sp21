@@ -1,10 +1,20 @@
 package byow.Core;
 
+import byow.Core.Maps.Room;
+import byow.Core.Maps.Wall;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
 import java.io.Serializable;
 
+/**
+ * A World class whose origin point locates at the right-down corner.
+ * e.g.
+ *  y
+ *  |
+ *  |________ x
+ * O
+ */
 public class World implements Serializable {
     private final int width;
     private final int height;
@@ -17,9 +27,11 @@ public class World implements Serializable {
         tiles = new TETile[width][height];
     }
 
-    public void generateWorld(long seed) {
-        Property property = new Property(seed);
+    public void initilizeWorld(Property property) {
         fillWorldNothing();
+
+        Room.createRooms(this, property);
+        Wall.createWalls(this, property);
 
     }
 
@@ -40,6 +52,28 @@ public class World implements Serializable {
         return ret;
     }
 
+    /**
+     * Get random x-axis value that can fit 'w' length
+     * @param w unit width
+     * @param inflation inflation padding
+     * @param property game property set
+     * @return randomly selected 'x'
+     */
+    public int getRandomX(int w, int inflation, Property property) {
+        return RandomUtils.uniform(property.getRandom(), inflation * 2, width - w - inflation);
+    }
+
+    /**
+     * Get random y-axis value that can fit 'h' length
+     * @param h unit width
+     * @param inflation inflation padding
+     * @param property game property set
+     * @return randomly selected 'y'
+     */
+    public int getRandomY(int h, int inflation, Property property) {
+        return RandomUtils.uniform(property.getRandom(), inflation * 2, height - h - inflation);
+    }
+
     public int getWidth() {
         return width;
     }
@@ -52,16 +86,21 @@ public class World implements Serializable {
         return tiles;
     }
 
+    public void setTiles(int x, int y, TETile tile) {
+        tiles[x][y] = tile;
+    }
+
     public boolean isNothing(int x, int y) {
         return tiles[x][y].equals(Tileset.NOTHING);
     }
 
     public boolean isWall(int x, int y) {
-        return tiles[x][y].equals(Tileset.WALL);
+        return tiles[x][y].equals(Tileset.WALL1) || tiles[x][y].equals(Tileset.WALL2)
+                || tiles[x][y].equals(Tileset.WALL3) || tiles[x][y].equals(Tileset.WALL4);
     }
 
     public boolean isRoom(int x, int y) {
-        return tiles[x][y].equals(Tileset.FLOOR);
+        return tiles[x][y].equals(Tileset.ROOM);
     }
 
     public boolean isRoad(int x, int y) {

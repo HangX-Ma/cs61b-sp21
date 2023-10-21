@@ -75,7 +75,7 @@ public class HexWorld {
     private static TETile randomTile() {
         int tileNum = RANDOM.nextInt(7);
         return switch (tileNum) {
-            case 0 -> Tileset.WALL;
+            case 0 -> Tileset.WALL1;
             case 1 -> Tileset.FLOWER;
             case 2 -> Tileset.SAND;
             case 3 -> Tileset.GRASS;

@@ -2,8 +2,11 @@ package byow.TileEngine;
 
 import java.awt.Color;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 
+import byow.Core.Engine;
+import byow.Core.Point;
 import edu.princeton.cs.introcs.StdDraw;
 import byow.Core.RandomUtils;
 
@@ -188,5 +191,27 @@ public class TETile {
         }
 
         return copy;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || o.getClass() != this.getClass()) {
+            return false;
+        }
+        TETile other = (TETile) o;
+        return other.character == this.character
+                && other.backgroundColor.equals(this.backgroundColor)
+                && other.textColor.equals(this.textColor)
+                && other.description.equals(this.description)
+                && Objects.equals(this.filepath, other.filepath);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return character + backgroundColor.hashCode() + textColor.hashCode() + description.hashCode();
     }
 }

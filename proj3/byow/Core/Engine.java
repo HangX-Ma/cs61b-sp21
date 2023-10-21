@@ -1,13 +1,12 @@
 package byow.Core;
 
-import byow.InputDemo.StringInputDevice;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 
+import java.time.LocalTime;
 import java.util.List;
 
-import static byow.Core.Utils.parseCommandL;
-import static byow.Core.Utils.parseCommandN;
+import static byow.Core.Utils.*;
 
 public class Engine {
     TERenderer ter = new TERenderer();
@@ -15,7 +14,8 @@ public class Engine {
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
 
-    Property property = new Property();
+    Property property;
+    World world = new World(WIDTH - 3, HEIGHT - 3);
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
@@ -53,7 +53,8 @@ public class Engine {
         //
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
-        TETile[][] finalWorldFrame = null;
+        ter.initialize(WIDTH - 3, HEIGHT - 3);
+        long seed;
         StringBuilder inputBuilder = new StringBuilder();
 
         /* Make input case-insensitive */
@@ -75,13 +76,18 @@ public class Engine {
         Pair<Long, List<Character>> parsedCommands = null;
         switch (action) {
             case 'n' -> {
-                parsedCommands = parseCommandN(commands);
+                parsedCommands/*[seed, actions]*/ = parseCommandN(commands);
+                seed = parsedCommands.first();
+                seed = LocalTime.now().toNanoOfDay(); // FIXME: Delete if not debug
+                property = new Property(seed);
+                world.initilizeWorld(property);
             }
             case 'l' -> {
                 parsedCommands = parseCommandL(commands);
             }
         }
-        return finalWorldFrame;
+        ter.renderFrame(world.getTiles());
+        return world.getTiles();
     }
 
     static public void main(String[] args) {
