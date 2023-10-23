@@ -1,5 +1,6 @@
 package byow.Core;
 
+import byow.Core.Maps.Road;
 import byow.Core.Maps.Room;
 import byow.Core.Maps.Wall;
 import byow.TileEngine.TETile;
@@ -32,6 +33,7 @@ public class World implements Serializable {
 
         Room.createRooms(this, property);
         Wall.createWalls(this, property);
+        Road.createRoad(this, property);
 
     }
 
@@ -60,7 +62,18 @@ public class World implements Serializable {
      * @return randomly selected 'x'
      */
     public int getRandomX(int w, int inflation, Property property) {
-        return RandomUtils.uniform(property.getRandom(), inflation * 2, width - w - inflation);
+        return RandomUtils.uniform(property.getRandom(), inflation, width - w - inflation);
+    }
+
+    /** Generate random odd 'x' coordinate value for room position. */
+    public int getRandomOddX(int w, int inflation, Property property) {
+        int x;
+        while (true) {
+            x = getRandomX(w, inflation, property);
+            if (x % 2 != 0) {
+                return x;
+            }
+        }
     }
 
     /**
@@ -71,7 +84,18 @@ public class World implements Serializable {
      * @return randomly selected 'y'
      */
     public int getRandomY(int h, int inflation, Property property) {
-        return RandomUtils.uniform(property.getRandom(), inflation * 2, height - h - inflation);
+        return RandomUtils.uniform(property.getRandom(), inflation, height - h - inflation);
+    }
+
+    /** Generate random odd 'y' coordinate value for room position. */
+    public int getRandomOddY(int h, int inflation, Property property) {
+        int y;
+        while (true) {
+            y = getRandomY(h, inflation, property);
+            if (y % 2 != 0) {
+                return y;
+            }
+        }
     }
 
     public int getWidth() {
@@ -84,6 +108,10 @@ public class World implements Serializable {
 
     public TETile[][] getTiles() {
         return tiles;
+    }
+
+    public void setTiles(Point p, TETile tile) {
+        tiles[p.getX()][p.getY()] = tile;
     }
 
     public void setTiles(int x, int y, TETile tile) {

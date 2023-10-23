@@ -7,21 +7,44 @@ import byow.Core.World;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Stack;
 
 public class Wall {
-    static public void createWalls(World world, Property property) {
-        HashSet<Point> points = property.getRoomSurroundedPoints();
-        for (Point p : points) {
-            if (RandomUtils.bernoulli(property.getRandom(), 0.3)) {
-                world.setTiles(p.getX(), p.getY(), getRandomWallTile(property));
-            } else {
-                world.setTiles(p.getX(), p.getY(), Tileset.FLOOR);
+    public static void createWalls(World world, Property property) {
+        for (int x = 1; x < world.getWidth() - 1; x += 2) {
+            for (int y = 1; y < world.getHeight() - 1; y += 2) {
+                if (world.isNothing(x, y)) {
+                    setWall(x, y, world, property);
+                }
             }
         }
     }
 
-    static private TETile getRandomWallTile(Property property) {
+    public static List<Point> scanAllWalls(World world) {
+        List<Point> walls = new ArrayList<>();
+        for (int x = 1; x < world.getWidth() - 1; x += 1) {
+            for (int y = 1; y < world.getHeight() - 1; y += 1) {
+                if (world.isWall(x, y)) {
+                    walls.add(new Point(x, y));
+                }
+            }
+        }
+        return walls;
+    }
+
+    public static void setWall(int x, int y, World world, Property property) {
+        Point p = new Point(x, y);
+        setWall(p, world, property);
+    }
+
+    public static void setWall(Point p, World world, Property property) {
+        world.setTiles(p, getRandomWallTile(property));
+    }
+
+    private static TETile getRandomWallTile(Property property) {
         return switch (RandomUtils.uniform(property.getRandom(), 4)) {
             case 0 -> Tileset.WALL1;
             case 1 -> Tileset.WALL2;

@@ -15,6 +15,10 @@ public class Room {
         }
     }
 
+    /** Randomly generate a room in 2D map without overlapping others.
+     *  - The width, height and position of the room need to be odd.
+     *  - Need to left one tile space for maze alignment. (This means
+     *    the position for the inflated position need to be even.) */
     private static void createSingleRoom(World world, Property property) {
         int inflation = 1;
         int w = RandomUtils.uniform(property.getRandom(), 3) * 2 + MIN_WIDTH;
@@ -23,8 +27,8 @@ public class Room {
         int wInflation = w + inflation * 2;
         int hInflation = h + inflation * 2;
 
-        int x = world.getRandomX(w, inflation, property);
-        int y = world.getRandomY(h, inflation, property);
+        int x = world.getRandomOddX(w, inflation, property);
+        int y = world.getRandomOddY(h, inflation, property);
 
         int xInflation = x - inflation;
         int yInflation = y - inflation;
@@ -32,8 +36,8 @@ public class Room {
         int tryTimes = 0;
         while (!world.isNothing(xInflation, yInflation)
                 || isRoomOverlapped(xInflation, yInflation, wInflation, hInflation, world)) {
-            x = world.getRandomX(w, inflation, property);
-            y = world.getRandomY(h, inflation, property);
+            x = world.getRandomOddX(w, inflation, property);
+            y = world.getRandomOddY(h, inflation, property);
             xInflation = x - inflation;
             yInflation = y - inflation;
             tryTimes += 1;

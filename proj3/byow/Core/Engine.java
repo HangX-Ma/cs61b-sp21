@@ -11,11 +11,11 @@ import static byow.Core.Utils.*;
 public class Engine {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
-    public static final int WIDTH = 80;
-    public static final int HEIGHT = 30;
+    public static final int WIDTH = 81;
+    public static final int HEIGHT = 31;
 
     Property property;
-    World world = new World(WIDTH - 3, HEIGHT - 3);
+    World world = new World(WIDTH, HEIGHT);
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
@@ -53,7 +53,7 @@ public class Engine {
         //
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
-        ter.initialize(WIDTH - 3, HEIGHT - 3);
+        ter.initialize(WIDTH, HEIGHT);
         long seed;
         StringBuilder inputBuilder = new StringBuilder();
 

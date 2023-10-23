@@ -1,18 +1,38 @@
 package byow.Core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Point {
     private int x;
     private int y;
+    private int rank;
 
     private static final int[][] directions =
-            new int[][]{{1, 0}, {0, -1}, {-1, 0}, {0, 1}, {1, 1}, {1, -1}, {-1, -1}, {-1, 1}};
+            new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {-1, 1}, {1, -1}};
 
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
+        this.rank = 0;
+    }
+
+    public static List<Point> getFourNeighborDirs() {
+        return getNeighborDirs(4);
+    }
+
+    public static List<Point> getEightNeighborDirs() {
+        return getNeighborDirs(8);
+    }
+
+    private static List<Point> getNeighborDirs(int dirNum) {
+        List<Point> dirs = new ArrayList<>();
+        assert (dirNum <= 8);
+        for (int i = 0; i < dirNum; i += 1) {
+            dirs.add(new Point(directions[i][0], directions[i][1]));
+        }
+        return dirs;
     }
 
     public static List<Point> getFourNeighborPoints(Point p) {
@@ -46,6 +66,14 @@ public class Point {
 
     public int getY() {
         return y;
+    }
+
+    public int getRank() {
+        return rank;
+    }
+
+    public void addRank() {
+        rank += 1;
     }
 
     @Override
