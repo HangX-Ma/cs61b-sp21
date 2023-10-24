@@ -3,6 +3,7 @@ package byow.Core;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -17,6 +18,28 @@ public class Engine {
 
     Property property;
     World world = new World(WIDTH, HEIGHT);
+
+
+    /** Internet game sharing */
+    // TODO: Add internet connection after keyboard function finished.
+    public void interactWithRemoteClient(String input) throws IOException {
+        if (!portCheck(input)) {
+            throw new IOException("Input port needs to be 4 length digit");
+        }
+        int port = Integer.getInteger(input);
+    }
+
+    private boolean portCheck(String input) {
+        if (input.length() != 4) {
+            return false;
+        }
+        for (char c : input.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
