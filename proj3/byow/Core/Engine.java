@@ -9,6 +9,7 @@ import java.util.List;
 import static byow.Core.Utils.*;
 
 public class Engine {
+    // FIXME: Delete if not debug
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 81;
@@ -29,16 +30,16 @@ public class Engine {
      * of characters (for example, "n123sswwdasdassadwas", "n123sss:q", "lwww". The engine should
      * behave exactly as if the user typed these characters into the engine using
      * interactWithKeyboard.
-     *
+     * <p>
      * Recall that strings ending in ":q" should cause the game to quite save. For example,
      * if we do interactWithInputString("n123sss:q"), we expect the game to run the first
      * 7 commands (n123sss) and then quit and save. If we then do
      * interactWithInputString("l"), we should be back in the exact same state.
-     *
+     * <p>
      * In other words, both of these calls:
      *   - interactWithInputString("n123sss:q")
      *   - interactWithInputString("lww")
-     *
+     * <p>
      * should yield the exact same world state as:
      *   - interactWithInputString("n123sssww")
      *
@@ -53,8 +54,32 @@ public class Engine {
         //
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
-        ter.initialize(WIDTH, HEIGHT);
         long seed;
+        String newInput = getFixedLowerCaseInput(input);
+        char action = newInput.charAt(0);
+        String commands = newInput.substring(1);
+
+        Pair<Long, List<Character>> parsedCommands = null;
+        switch (action) {
+            case 'n' -> {
+                parsedCommands/*[seed, actions]*/ = parseCommandN(commands);
+                seed = parsedCommands.first();
+                // FIXME: Delete if not debug
+//                seed = LocalTime.now().toNanoOfDay();
+                property = new Property(seed);
+                world.initilizeWorld(property);
+            }
+            case 'l' -> {
+                parsedCommands = parseCommandL(commands);
+            }
+        }
+        // FIXME: Delete if not debug
+//        ter.initialize(WIDTH, HEIGHT);
+//        ter.renderFrame(world.getTiles());
+        return world.getTiles();
+    }
+
+    private static String getFixedLowerCaseInput(String input) {
         StringBuilder inputBuilder = new StringBuilder();
 
         /* Make input case-insensitive */
@@ -69,25 +94,7 @@ public class Engine {
         }
 
         /* retrieve information from neInput */
-        String newInput = inputBuilder.toString();
-        char action = newInput.charAt(0);
-        String commands = newInput.substring(1);
-
-        Pair<Long, List<Character>> parsedCommands = null;
-        switch (action) {
-            case 'n' -> {
-                parsedCommands/*[seed, actions]*/ = parseCommandN(commands);
-                seed = parsedCommands.first();
-                seed = LocalTime.now().toNanoOfDay(); // FIXME: Delete if not debug
-                property = new Property(seed);
-                world.initilizeWorld(property);
-            }
-            case 'l' -> {
-                parsedCommands = parseCommandL(commands);
-            }
-        }
-        ter.renderFrame(world.getTiles());
-        return world.getTiles();
+        return inputBuilder.toString();
     }
 
     static public void main(String[] args) {
