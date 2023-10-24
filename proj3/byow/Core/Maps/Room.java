@@ -47,37 +47,22 @@ public class Room {
         }
 
         collectRoomAreas(x, y, w, h, property);
-        collectRoomSurroundedPoints(xInflation, yInflation, wInflation, hInflation, property);
 
+        Point roomRoot = new Point(x, y);
         /* Update the world */
         for (int i = x; i < x + w; i += 1) {
             for (int j = y; j < y + h; j += 1) {
                 world.setTiles(i, j, Tileset.ROOM);
+                /* Union all other room point to the point at (x, y) */
+                Point roomPoint = new Point(i, j);
+                property.getKruskalUnionMaps().put(roomPoint, roomPoint);
+                Utils.kruskalUnion(roomPoint, roomRoot, property.getKruskalUnionMaps());
             }
         }
     }
 
     private static void collectRoomAreas(int x, int y, int w, int h, Property property) {
         property.getRoomAreas().put(new Point(x, y), new Point(x + w - 1, y + h - 1));
-    }
-
-    private static void collectRoomSurroundedPoints(int x, int y, int w, int h, Property property) {
-        // top edge
-        for (int i = x; i < x + w; i += 1) {
-            property.getRoomSurroundedPoints().add(new Point(i, y));
-        }
-        // bottom edge
-        for (int i = x; i < x + w; i += 1) {
-            property.getRoomSurroundedPoints().add(new Point(i, y + h - 1));
-        }
-        // left edge
-        for (int i = y; i < y + h; i += 1) {
-            property.getRoomSurroundedPoints().add(new Point(x, i));
-        }
-        // right edge
-        for (int i = y; i < y + h; i += 1) {
-            property.getRoomSurroundedPoints().add(new Point(x + w - 1, i));
-        }
     }
 
     /** Check the target area if contains room tilt */

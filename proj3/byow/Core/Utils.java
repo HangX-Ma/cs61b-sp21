@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import java.util.LinkedList;
@@ -205,6 +206,36 @@ public class Utils {
 
     public static void quit(Property obj) {
         save(obj);
+    }
+
+
+    /* Kruskal UNION */
+
+    public static boolean isConnected(Point p1, Point p2, HashMap<Point, Point> root) {
+        return kruskalFind(p1, root).equals(kruskalFind(p2, root));
+    }
+
+    /** find ancestor */
+    public static Point kruskalFind(Point unit, HashMap<Point, Point> root) {
+        if (root.get(unit) != unit) {
+            root.put(unit, kruskalFind(root.get(unit), root));
+        }
+        return root.get(unit);
+    }
+
+    /** We use rank union method, which will reduce union tree depth */
+    public static void kruskalUnion(Point unit1, Point unit2, HashMap<Point, Point> root) {
+        Point root1 = kruskalFind(unit1, root);
+        Point root2 = kruskalFind(unit2, root);
+        // Attach the lower rank to higher rank
+        if (root1.getRank() <= root2.getRank()) {
+            root.put(root1, root2);
+        } else {
+            root.put(root2, root1);
+        }
+        if (root1.getRank() == root2.getRank() && !root1.equals(root2)) {
+            root2.addRank();
+        }
     }
 
 }

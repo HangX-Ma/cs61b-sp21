@@ -1,13 +1,12 @@
 package byow.Core.Maps;
 
 
-import byow.Core.Point;
-import byow.Core.Property;
-import byow.Core.RandomUtils;
-import byow.Core.World;
+import byow.Core.*;
 import byow.TileEngine.Tileset;
 
+import javax.sound.sampled.Port;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /** TODO: Get the collection of all Room points and create
  *  a group of separate union set.
@@ -22,9 +21,9 @@ public class Road {
                     Point p = new Point(x, y);
                     growMaze(p, world, property);
                 }
-
             }
         }
+        addConnector(world, property);
     }
 
     private static void growMaze(Point p, World world, Property property) {
@@ -33,6 +32,7 @@ public class Road {
 
         setRoad(p, world);
         cells.push(p);
+        property.getKruskalUnionMaps().put(p, p); // root of this maze path
 
         while (!cells.isEmpty()) {
             Point nextPoint = cells.peek();
@@ -54,11 +54,12 @@ public class Road {
                 // Even position
                 nextDirPoint = new Point(nextPoint.getX() + nextDir.getX(),
                         nextPoint.getY() + nextDir.getY());
-                setRoad(nextDirPoint, world);
+                updateMaze(nextDirPoint, p, world, property);
+
                 // Odd position
                 nextDirPoint = new Point(nextPoint.getX() + 2 * nextDir.getX(),
                         nextPoint.getY() + 2 * nextDir.getY());
-                setRoad(nextDirPoint, world);
+                updateMaze(nextDirPoint, p, world, property);
 
                 cells.push(nextDirPoint);
                 lastDir = nextDir;
@@ -68,6 +69,12 @@ public class Road {
                 lastDir = new Point(0, 0);
             }
         }
+    }
+
+    private static void updateMaze(Point mazePoint, Point rootPoint, World world, Property property) {
+        setRoad(mazePoint, world);
+        property.getKruskalUnionMaps().put(mazePoint, mazePoint);
+        Utils.kruskalUnion(mazePoint, rootPoint, property.getKruskalUnionMaps());
     }
 
     /** Gets whether or not an opening can be carved from the given starting
@@ -85,32 +92,42 @@ public class Road {
         return world.isWall(p.getX() + 2 * dir.getX(), p.getY() + 2 * dir.getY());
     }
 
-    private static boolean isConnected(Point p1, Point p2, HashMap<Point, Point> root) {
-        return kruskalFind(p1, root).equals(kruskalFind(p2, root));
+    private static void addConnector(World world, Property property) {
+        HashMap<Point, List<Point>> connectorMaps = getRegionConnectors(world);
+        List<Point> connectors = new ArrayList<>(connectorMaps.keySet());
+
+        while (!connectors.isEmpty()) {
+            Point connector = connectors.get(RandomUtils.uniform(property.getRandom(), connectors.size()));
+            List<Point> points = connectorMaps.get(connector);
+            assert (points.size() == 2);
+            if (!Utils.isConnected(points.get(0), points.get(1), property.getKruskalUnionMaps())) {
+                Road.setRoad(connector, world);
+                Utils.kruskalUnion(points.get(0), points.get(1), property.getKruskalUnionMaps());
+            }
+            connectors.remove(connector);
+        }
     }
 
-    /** find ancestor */
-    private static Point kruskalFind(Point unit, HashMap<Point, Point> root) {
-        if (root.get(unit) != unit) {
-            root.put(unit, kruskalFind(root.get(unit), root));
+    private static HashMap<Point, List<Point>> getRegionConnectors(World world) {
+        HashMap<Point, List<Point>> regionConnectors = new HashMap<>();
+        for (int x = 1; x < world.getWidth() - 1; x += 1) {
+            for (int y = 1; y < world.getHeight() - 1; y += 1) {
+                if (world.isNothing(x, y)) {
+                    List<Point> passageSet = new ArrayList<>();
+                    for (Point neighborPoint : Point.getFourNeighborPoints(x, y)) {
+                        if (!world.isNothing(neighborPoint.getX(), neighborPoint.getY())) {
+                            passageSet.add(neighborPoint);
+                        }
+                    }
+                    if (passageSet.size() >= 2) {
+                        regionConnectors.put(new Point(x, y), passageSet);
+                    }
+                }
+            }
         }
-        return root.get(unit);
+        return regionConnectors;
     }
 
-    /** We use rank union method, which will reduce union tree depth */
-    private static void kruskalUnion(Point unit1, Point unit2, HashMap<Point, Point> root) {
-        Point root1 = kruskalFind(unit1, root);
-        Point root2 = kruskalFind(unit2, root);
-        // Attach the lower rank to higher rank
-        if (root1.getRank() <= root2.getRank()) {
-            root.put(root1, root2);
-        } else {
-            root.put(root2, root1);
-        }
-        if (root1.getRank() == root2.getRank() && !root1.equals(root2)) {
-            root2.addRank();
-        }
-    }
 
     public static void setRoad(int x, int y, World world) {
         Point p = new Point(x, y);
