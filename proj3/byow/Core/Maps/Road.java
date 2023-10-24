@@ -1,18 +1,13 @@
 package byow.Core.Maps;
 
-
 import byow.Core.*;
 import byow.TileEngine.Tileset;
-
-import javax.sound.sampled.Port;
 import java.util.*;
-import java.util.stream.Collectors;
 
-/** TODO: Get the collection of all Room points and create
- *  a group of separate union set.
- */
 public class Road {
     private static final int WINDING_PERCENT = 40;
+    private static final int REMOVE_DEAD_ENDS_TIMES = 20;
+    private static final double MAZE_GEN_RATIO = 0.7; // Maze area ratio
 
     public static void createRoad(World world, Property property) {
         for (int x = 1; x < world.getWidth() - 1; x += 2) {
@@ -24,8 +19,10 @@ public class Road {
             }
         }
         addConnector(world, property);
+        removeDeadEnds(world, property);
     }
 
+    /** Generate maze path in rest empty space. */
     private static void growMaze(Point p, World world, Property property) {
         Stack<Point> cells = new Stack<>();
         Point lastDir = new Point(0, 0);
@@ -77,14 +74,22 @@ public class Road {
         Utils.kruskalUnion(mazePoint, rootPoint, property.getKruskalUnionMaps());
     }
 
-    /** Gets whether or not an opening can be carved from the given starting
-     *  [Cell] at [pos] to the adjacent Cell facing [direction]. Returns `true`
-     *  if the starting Cell is in bounds and the destination Cell is filled
-     *  (or out of bounds) */
+    /**
+     * Gets whether an opening can be carved from the given starting
+     * [Cell] at [pos] to the adjacent Cell facing [direction]. Returns `true`
+     * if the starting Cell is in bounds and the destination Cell is filled
+     * (or out of bounds)
+     *
+     * @param p     current point
+     * @param dir   neighbor directions
+     * @param world world instance
+     */
     private static boolean canCarveCheck(Point p, Point dir, World world) {
         // Must end in bounds.
-        if (p.getX() + dir.getX() * 3 > world.getWidth() || p.getX() + dir.getX() * 3 < 0
-            || p.getY() + dir.getY() * 3 > world.getHeight() || p.getY() + dir.getY() * 3 < 0) {
+        if (p.getX() + dir.getX() * 3 > world.getWidth() * (1.0 - Road.MAZE_GEN_RATIO)
+            || p.getX() + dir.getX() * 3 < world.getWidth() * Road.MAZE_GEN_RATIO
+            || p.getY() + dir.getY() * 3 > world.getHeight() * (1.0 - Road.MAZE_GEN_RATIO)
+            || p.getY() + dir.getY() * 3 < world.getHeight() * Road.MAZE_GEN_RATIO) {
             return false;
         }
 
@@ -92,6 +97,7 @@ public class Road {
         return world.isWall(p.getX() + 2 * dir.getX(), p.getY() + 2 * dir.getY());
     }
 
+    /* Create a minimum spanning tree. We serve every room and maze path as separately single vertex. */
     private static void addConnector(World world, Property property) {
         HashMap<Point, List<Point>> connectorMaps = getRegionConnectors(world);
         List<Point> connectors = new ArrayList<>(connectorMaps.keySet());
@@ -108,6 +114,7 @@ public class Road {
         }
     }
 
+    /** Search connectors that can connect two regions in the empty space(Fill with 'Nothing'). */
     private static HashMap<Point, List<Point>> getRegionConnectors(World world) {
         HashMap<Point, List<Point>> regionConnectors = new HashMap<>();
         for (int x = 1; x < world.getWidth() - 1; x += 1) {
@@ -128,6 +135,51 @@ public class Road {
         return regionConnectors;
     }
 
+    /** Simplify the maze! */
+    private static void removeDeadEnds(World world, Property property) {
+        List<Point> deadEndPoints = getDeadEnds(world);
+        while (!deadEndPoints.isEmpty()) {
+            Point checkPoint = deadEndPoints.remove(RandomUtils.uniform(property.getRandom(), deadEndPoints.size()));
+            int count =RandomUtils.uniform(property.getRandom(),
+                    REMOVE_DEAD_ENDS_TIMES / 2, REMOVE_DEAD_ENDS_TIMES);
+            for (int i = 0; i < count; i += 1) {
+                List<Point> nextDirs = new ArrayList<>();
+                for (Point dir : Point.getFourNeighborDirs()) {
+                    if (!world.isNothing(checkPoint.getX() + dir.getX(),checkPoint.getY() + dir.getY())) {
+                        nextDirs.add(dir);
+                    }
+                }
+                if (nextDirs.size() != 1) {
+                    break;
+                }
+                // Surrounded with 3 'Nothing' tile. Dead End!
+                world.setTiles(checkPoint.getX(), checkPoint.getY(), Tileset.NOTHING);
+                checkPoint = new Point(checkPoint.getX() + nextDirs.get(0).getX(),
+                        checkPoint.getY() + nextDirs.get(0).getY());
+            }
+        }
+    }
+
+    private static List<Point> getDeadEnds(World world) {
+        List<Point> deadEndPoints = new ArrayList<>();
+        for (int x = 1; x < world.getWidth() - 1; x += 1) {
+            for (int y = 1; y < world.getHeight() - 1; y += 1) {
+                if (world.isRoad(x, y)) {
+                    Point checkPoint = new Point(x, y);
+                    List<Point> nextDirs = new ArrayList<>();
+                    for (Point dir : Point.getFourNeighborDirs()) {
+                        if (!world.isNothing(checkPoint.getX() + dir.getX(),checkPoint.getY() + dir.getY())) {
+                            nextDirs.add(dir);
+                        }
+                    }
+                    if (nextDirs.size() == 1) {
+                        deadEndPoints.add(checkPoint);
+                    }
+                }
+            }
+        }
+        return deadEndPoints;
+    }
 
     public static void setRoad(int x, int y, World world) {
         Point p = new Point(x, y);

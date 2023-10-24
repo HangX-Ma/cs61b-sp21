@@ -32,8 +32,9 @@ public class World implements Serializable {
         fillWorldNothing();
 
         Room.createRooms(this, property);
-        Wall.createWalls(this, property);
+        Wall.createWallNodes(this, property);
         Road.createRoad(this, property);
+        Wall.createWalls(this, property);
 
     }
 

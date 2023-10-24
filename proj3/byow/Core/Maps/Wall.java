@@ -8,12 +8,25 @@ import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Stack;
 
 public class Wall {
+    /** Create walls surrounding roads and rooms */
     public static void createWalls(World world, Property property) {
+        for (int x = 1; x < world.getWidth() - 1; x += 1) {
+            for (int y = 1; y < world.getHeight() - 1; y += 1) {
+                if (world.isRoad(x, y) || world.isRoom(x, y)) {
+                    for (Point neighborPoint : Point.getEightNeighborPoints(x, y)) {
+                        if (world.isNothing(neighborPoint.getX(), neighborPoint.getY())) {
+                            setWall(neighborPoint, world, property);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void createWallNodes(World world, Property property) {
         for (int x = 1; x < world.getWidth() - 1; x += 2) {
             for (int y = 1; y < world.getHeight() - 1; y += 2) {
                 if (world.isNothing(x, y)) {
