@@ -147,8 +147,8 @@ public class Utils {
         System.out.println("Input string should be valid! (case insensitive)");
         System.out.println("Usage: command [action]");
         System.out.println("\tN3412S (create a new world with seed 3412)");
-        System.out.println("\tN123SSS:q (create a new world with seed 123, " +
-                "move down twice then quit and save)");
+        System.out.println("\tN123SSS:q (create a new world with seed 123, "
+                + "move down twice then quit and save)");
     }
 
     public static Property load() {

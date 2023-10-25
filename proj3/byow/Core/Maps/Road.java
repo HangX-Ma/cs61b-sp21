@@ -106,7 +106,8 @@ public class Road {
         List<Point> connectors = new ArrayList<>(connectorMaps.keySet());
 
         while (!connectors.isEmpty()) {
-            Point connector = connectors.get(RandomUtils.uniform(property.getRandom(), connectors.size()));
+            Point connector = connectors.get(
+                RandomUtils.uniform(property.getRandom(), connectors.size()));
             List<Point> points = connectorMaps.get(connector);
             assert (points.size() == 2);
             if (!Utils.isConnected(points.get(0), points.get(1), property.getKruskalUnionMaps())) {
