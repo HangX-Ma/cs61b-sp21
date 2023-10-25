@@ -85,7 +85,8 @@ public class Room {
         Point entryRoomUpperRight = property.getRoomAreas().get(entryRoomDownLeft);
 
         List<Point> entryRoomPoints = getRoomPoints(entryRoomDownLeft, entryRoomUpperRight);
-        Point entry = entryRoomPoints.get(RandomUtils.uniform(property.getRandom(), entryRoomPoints.size()));
+        Point entry = entryRoomPoints.get(
+                RandomUtils.uniform(property.getRandom(), entryRoomPoints.size()));
         world.setEntry(entry);
         world.setTiles(entry, Tileset.ENTRY);
 

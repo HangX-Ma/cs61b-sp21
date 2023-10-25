@@ -211,6 +211,7 @@ public class TETile implements Serializable {
 
     @Override
     public int hashCode() {
-        return character + backgroundColor.hashCode() + textColor.hashCode() + description.hashCode();
+        return character + backgroundColor.hashCode()
+                + textColor.hashCode() + description.hashCode();
     }
 }

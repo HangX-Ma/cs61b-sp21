@@ -9,7 +9,7 @@ public class Point implements Serializable {
     private final int y;
     private int rank;
 
-    private static final int[][] directions =
+    private static final int[][] DIRECTIONS =
             new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {-1, 1}, {1, -1}};
 
     public Point(int x, int y) {
@@ -30,7 +30,7 @@ public class Point implements Serializable {
         List<Point> dirs = new ArrayList<>();
         assert (dirNum <= 8);
         for (int i = 0; i < dirNum; i += 1) {
-            dirs.add(new Point(directions[i][0], directions[i][1]));
+            dirs.add(new Point(DIRECTIONS[i][0], DIRECTIONS[i][1]));
         }
         return dirs;
     }
@@ -55,7 +55,7 @@ public class Point implements Serializable {
         List<Point> points = new ArrayList<>();
         assert (dirNum <= 8);
         for (int i = 0; i < dirNum; i += 1) {
-            points.add(new Point(x + directions[i][0], y + directions[i][1]));
+            points.add(new Point(x + DIRECTIONS[i][0], y + DIRECTIONS[i][1]));
         }
         return points;
     }

@@ -49,7 +49,7 @@ public class Frame {
                         }
                     }
                 } else {
-                    if (Utils.numberSet.contains(typed)) {
+                    if (Utils.NUMBER_SET.contains(typed)) {
                         input.append(typed);
                     } else if (typed == 's') {
                         input.append(typed);

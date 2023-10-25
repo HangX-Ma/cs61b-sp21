@@ -141,7 +141,7 @@ public class Engine {
 
         /* Check the input to ensure it fits the key set requirement. */
         for (char c : lowerCaseInput) {
-            if (!Utils.numberSet.contains(c) && !Utils.symbolSet.contains(c)) {
+            if (!Utils.NUMBER_SET.contains(c) && !Utils.SYMBOL_SET.contains(c)) {
                 continue;
             }
             inputBuilder.append(c);

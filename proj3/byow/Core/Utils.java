@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class Utils {
     public static final File CWD = new File(System.getProperty("user.dir"));
-    public static final File saveFile = join(CWD, "savedfile.txt");
+    public static final File SAVED_FILE = join(CWD, "savedfile.txt");
 
     /** Return the entire contents of FILE as a byte array.  FILE must
      *  be a normal file.  Throws IllegalArgumentException
@@ -119,12 +119,12 @@ public class Utils {
 
     /* ENGINE UTILS */
 
-    // TODO: Add more keys if necessary
-    public static final HashSet<Character> numberSet = Stream.of(
+    /* Add more keys if necessary */
+    public static final HashSet<Character> NUMBER_SET = Stream.of(
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
     ).collect(Collectors.toCollection(HashSet::new));
 
-    public static final HashSet<Character> symbolSet = Stream.of(
+    public static final HashSet<Character> SYMBOL_SET = Stream.of(
             'a', 's', 'w', 'd', 'l', 'q', ':', 'n'
     ).collect(Collectors.toCollection(HashSet::new));
 
@@ -147,16 +147,17 @@ public class Utils {
         System.out.println("Input string should be valid! (case insensitive)");
         System.out.println("Usage: command [action]");
         System.out.println("\tN3412S (create a new world with seed 3412)");
-        System.out.println("\tN123SSS:q (create a new world with seed 123, move down twice then quit and save)");
+        System.out.println("\tN123SSS:q (create a new world with seed 123, " +
+                "move down twice then quit and save)");
     }
 
     public static Property load() {
         System.out.println("Load previous game world...");
-        return readObject(saveFile, Property.class);
+        return readObject(SAVED_FILE, Property.class);
     }
 
     public static void save(Property property) {
-        writeObject(saveFile, property);
+        writeObject(SAVED_FILE, property);
     }
 
     public static void quit(Property property) {

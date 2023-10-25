@@ -46,7 +46,8 @@ public class Road {
                         && RandomUtils.uniform(property.getRandom(), 0, 100) > WINDING_PERCENT) {
                     nextDir = lastDir;
                 } else {
-                    nextDir = candidateDirs.get(RandomUtils.uniform(property.getRandom(), candidateDirs.size()));
+                    nextDir = candidateDirs.get(
+                            RandomUtils.uniform(property.getRandom(), candidateDirs.size()));
                 }
                 // Even position
                 nextDirPoint = new Point(nextPoint.getX() + nextDir.getX(),
@@ -68,7 +69,8 @@ public class Road {
         }
     }
 
-    private static void updateMaze(Point mazePoint, Point rootPoint, World world, Property property) {
+    private static void updateMaze(Point mazePoint, Point rootPoint,
+                                   World world, Property property) {
         setRoad(mazePoint, world);
         property.getKruskalUnionMaps().put(mazePoint, mazePoint);
         Utils.kruskalUnion(mazePoint, rootPoint, property.getKruskalUnionMaps());
@@ -97,7 +99,8 @@ public class Road {
         return world.isWall(p.getX() + 2 * dir.getX(), p.getY() + 2 * dir.getY());
     }
 
-    /* Create a minimum spanning tree. We serve every room and maze path as separately single vertex. */
+    /** Create a minimum spanning tree. We serve every room
+     *  and maze path as separately single vertex. */
     private static void addConnector(World world, Property property) {
         HashMap<Point, List<Point>> connectorMaps = getRegionConnectors(world);
         List<Point> connectors = new ArrayList<>(connectorMaps.keySet());
@@ -139,13 +142,16 @@ public class Road {
     private static void removeDeadEnds(World world, Property property) {
         List<Point> deadEndPoints = getDeadEnds(world);
         while (!deadEndPoints.isEmpty()) {
-            Point checkPoint = deadEndPoints.remove(RandomUtils.uniform(property.getRandom(), deadEndPoints.size()));
-            int count =RandomUtils.uniform(property.getRandom(),
-                    REMOVE_DEAD_ENDS_TIMES / 2, REMOVE_DEAD_ENDS_TIMES);
+            Point checkPoint = deadEndPoints.remove(
+                    RandomUtils.uniform(property.getRandom(), deadEndPoints.size()));
+            int count = RandomUtils.uniform(property.getRandom(),
+                                        REMOVE_DEAD_ENDS_TIMES / 2,
+                                           REMOVE_DEAD_ENDS_TIMES);
             for (int i = 0; i < count; i += 1) {
                 List<Point> nextDirs = new ArrayList<>();
                 for (Point dir : Point.getFourNeighborDirs()) {
-                    if (!world.isNothing(checkPoint.getX() + dir.getX(),checkPoint.getY() + dir.getY())) {
+                    if (!world.isNothing(checkPoint.getX() + dir.getX(),
+                                         checkPoint.getY() + dir.getY())) {
                         nextDirs.add(dir);
                     }
                 }
@@ -168,7 +174,8 @@ public class Road {
                     Point checkPoint = new Point(x, y);
                     List<Point> nextDirs = new ArrayList<>();
                     for (Point dir : Point.getFourNeighborDirs()) {
-                        if (!world.isNothing(checkPoint.getX() + dir.getX(),checkPoint.getY() + dir.getY())) {
+                        if (!world.isNothing(checkPoint.getX() + dir.getX(),
+                                             checkPoint.getY() + dir.getY())) {
                             nextDirs.add(dir);
                         }
                     }
