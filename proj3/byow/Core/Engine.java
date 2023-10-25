@@ -1,24 +1,20 @@
 package byow.Core;
 
+import byow.Core.Avatar.Avatar;
+import byow.Core.HUD.Frame;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
-
 import java.io.IOException;
-import java.time.LocalTime;
-import java.util.List;
-
-import static byow.Core.Utils.*;
 
 public class Engine {
-    // FIXME: Delete if not debug
-    TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 81;
     public static final int HEIGHT = 31;
 
-    Property property;
-    World world = new World(WIDTH, HEIGHT);
+    Property property = new Property();
+    TERenderer ter = new TERenderer();
 
+    boolean gameStart = false;
 
     /** Internet game sharing */
     // TODO: Add internet connection after keyboard function finished.
@@ -46,6 +42,22 @@ public class Engine {
      * including inputs from the main menu.
      */
     public void interactWithKeyboard() {
+        ter.initialize(WIDTH, HEIGHT, 2, 2);
+
+        Frame frame = new Frame();
+        frame.frameInit();
+
+        while (true) {
+            StringBuilder input = new StringBuilder();
+            if (!gameStart) {
+                frame.menuInput(input);
+            } else {
+                frame.actionInput(input);
+            }
+            TETile[][] tiles = interactWithInputString(input.toString());
+            if (tiles == null) { return; }
+            frame.drawFrame(ter, tiles);
+        }
     }
 
     /**
@@ -70,36 +82,55 @@ public class Engine {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] interactWithInputString(String input) {
-        // TODO: Fill out this method so that it run the engine using the input
+        // DONE: Fill out this method so that it run the engine using the input
         // passed in as an argument, and return a 2D tile representation of the
         // world that would have been drawn if the same inputs had been given
         // to interactWithKeyboard().
         //
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
-        long seed;
         String newInput = getFixedLowerCaseInput(input);
-        char action = newInput.charAt(0);
-        String commands = newInput.substring(1);
 
-        Pair<Long, List<Character>> parsedCommands = null;
-        switch (action) {
-            case 'n' -> {
-                parsedCommands/*[seed, actions]*/ = parseCommandN(commands);
-                seed = parsedCommands.first();
-                // FIXME: Delete if not debug
-//                seed = LocalTime.now().toNanoOfDay();
-                property = new Property(seed);
-                world.initilizeWorld(property);
+        if (!gameStart) {
+            char action = newInput.charAt(0);
+            newInput = newInput.substring(1);
+
+            switch (action) {
+                case 'n' -> {
+                    int seedEndIndex = newInput.indexOf('s');
+                    System.out.println(newInput.substring(seedEndIndex));
+                    long seed = Utils.getSeedFromString(newInput.substring(0, seedEndIndex));
+                    generateWorld(seed, property);
+                    input = Utils.parseCommand(newInput, seedEndIndex + 1);
+                }
+                case 'l' -> {
+                    property = Utils.load();
+                    input = Utils.parseCommand(newInput, 0);
+                }
             }
-            case 'l' -> {
-                parsedCommands = parseCommandL(commands);
+            gameStart = true;
+        }
+        Utils.move(input, property);
+        parseSuffixCommand(newInput, property);
+
+        return property.gameWorld.getTiles();
+    }
+
+    private static void parseSuffixCommand(String input, Property property) {
+        if (input == null || input.isEmpty()) {
+            return;
+        }
+        int colonIndex = input.indexOf(':');
+        if (colonIndex != -1) {
+            switch (input.charAt(colonIndex + 1)) {
+                case 'q' -> {
+                    Utils.quit(property);
+                }
+                default -> {
+                    System.out.println("Coming soon...");
+                }
             }
         }
-        // FIXME: Delete if not debug
-//        ter.initialize(WIDTH, HEIGHT);
-//        ter.renderFrame(world.getTiles());
-        return world.getTiles();
     }
 
     private static String getFixedLowerCaseInput(String input) {
@@ -120,12 +151,19 @@ public class Engine {
         return inputBuilder.toString();
     }
 
+    private static void generateWorld(long seed, Property property) {
+        property.shadowWorld.initilizeWorld(seed, property);
+        property.gameWorld = property.shadowWorld.clone();
+        property.avatar = new Avatar(property.gameWorld);
+        property.avatar.avatarMove(property.gameWorld, "");
+    }
+
     static public void main(String[] args) {
         Engine engine = new Engine();
         String input1 = "n24958091840518SsswwWaasssSsdD:q";
         String input2 = "laasssSsdD:q";
-        String input3 = "laasssSsdD";
+        String input3 = "la:q";
         String input4 = "n2440518SsswwWaasss";
-        engine.interactWithInputString(input1);
+        engine.interactWithInputString(input3);
     }
 }

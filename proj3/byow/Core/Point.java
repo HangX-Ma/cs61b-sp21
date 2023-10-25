@@ -1,12 +1,12 @@
 package byow.Core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class Point {
-    private int x;
-    private int y;
+public class Point implements Serializable {
+    private final int x;
+    private final int y;
     private int rank;
 
     private static final int[][] directions =

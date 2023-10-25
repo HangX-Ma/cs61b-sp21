@@ -4,17 +4,16 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
 import java.util.HashMap;
 import java.util.HashSet;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Utils {
     public static final File CWD = new File(System.getProperty("user.dir"));
-    public static final File saveFile = join(CWD, "saved.txt");
+    public static final File saveFile = join(CWD, "savedfile.txt");
 
     /** Return the entire contents of FILE as a byte array.  FILE must
      *  be a normal file.  Throws IllegalArgumentException
@@ -44,8 +43,7 @@ public class Utils {
     static void writeContents(File file, Object... contents) {
         try {
             if (file.isDirectory()) {
-                throw
-                        new IllegalArgumentException("cannot overwrite directory");
+                throw new IllegalArgumentException("cannot overwrite directory");
             }
             BufferedOutputStream str =
                     new BufferedOutputStream(Files.newOutputStream(file.toPath()));
@@ -130,62 +128,18 @@ public class Utils {
             'a', 's', 'w', 'd', 'l', 'q', ':', 'n'
     ).collect(Collectors.toCollection(HashSet::new));
 
-
-
-    /** The input format will be 'N####S' + Action letters.
-     *  We will deal with the string after 'N' and attach 'q' at front if found.
-     */
-    public static Pair<Long, List<Character>> parseCommandN(String input) {
-        long seed;
-        List<Character> actionList = new LinkedList<>();
-
-        int letterIndex = input.indexOf('s');; // first 's' index
-        int colonIndex = input.indexOf(':'); // first ':' index
-
-        /* Covert seed string to long type */
-        String seedString = input.substring(0, letterIndex);
-        seed = getSeedFromString(seedString);
-
-        /* obtain actions list */
-        if (colonIndex != -1) {
-            /* attach the action after the colon and discard all others */
-            actionList.add(input.charAt(colonIndex + 1));
-
-            String actions = input.substring(letterIndex + 1, colonIndex);
-            catenateActions(actionList, actions);
-        } else {
-            /* No colon found but actions */
-            if (letterIndex < input.length() - 1) {
-                String actions = input.substring(letterIndex + 1);
-                catenateActions(actionList, actions);
-            }
-        }
-
-        return new Pair<>(seed, actionList);
-    }
-
-    public static Pair<Long, List<Character>> parseCommandL(String input) {
-        String actions = input;
-        List<Character> actionList = new LinkedList<>();
+    public static String parseCommand(String input, int startIndex) {
+        String actions = input.substring(startIndex);
         int colonIndex = input.indexOf(':');
         if (colonIndex != -1) {
-            actions = input.substring(0, colonIndex);
-            actionList.add(input.charAt(colonIndex + 1));
+            actions = input.substring(startIndex, colonIndex);
         }
-        catenateActions(actionList, actions);
 
-        return new Pair<>(null, actionList);
-    }
-
-    /** Put actions in action list */
-    private static void catenateActions(List<Character> actionList, String actions) {
-        for (char action : actions.toCharArray()) {
-            actionList.add(action);
-        }
+        return actions;
     }
 
     /** We need to ensure the least significant character first */
-    private static long getSeedFromString(String seedString) {
+    public static long getSeedFromString(String seedString) {
         return Long.parseLong(seedString, 10);
     }
 
@@ -197,17 +151,30 @@ public class Utils {
     }
 
     public static Property load() {
+        System.out.println("Load previous game world...");
         return readObject(saveFile, Property.class);
     }
 
-    public static void save(Property obj) {
-        writeObject(saveFile, obj);
+    public static void save(Property property) {
+        writeObject(saveFile, property);
     }
 
-    public static void quit(Property obj) {
-        save(obj);
+    public static void quit(Property property) {
+        System.out.println("Quit game...");
+        save(property);
     }
 
+    public static void move(String actions, Property property) {
+        if (actions == null || actions.isEmpty() || actions.contains(":")) {
+            return;
+        }
+
+        for (char a : actions.toCharArray()) {
+            // DONE: Add logic to realize movement function of avatar
+            property.gameWorld = property.shadowWorld.clone();
+            property.avatar.avatarMove(property.gameWorld, Character.toString(a));
+        }
+    }
 
     /* Kruskal UNION */
 

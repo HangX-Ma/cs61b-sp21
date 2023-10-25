@@ -3,6 +3,9 @@ package byow.Core.Maps;
 import byow.Core.*;
 import byow.TileEngine.Tileset;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Room {
     private static final int MIN_WIDTH = 3;
     private static final int MIN_HEIGHT = 3;
@@ -77,4 +80,53 @@ public class Room {
         return false;
     }
 
+    public static void createEntryAndExit(World world, Property property) {
+        Point entryRoomDownLeft = getRandomRoom(property);
+        Point entryRoomUpperRight = property.getRoomAreas().get(entryRoomDownLeft);
+
+        List<Point> entryRoomPoints = getRoomPoints(entryRoomDownLeft, entryRoomUpperRight);
+        Point entry = entryRoomPoints.get(RandomUtils.uniform(property.getRandom(), entryRoomPoints.size()));
+        world.setEntry(entry);
+        world.setTiles(entry, Tileset.ENTRY);
+
+        Point exit = getExitRoomPoint(world, property);
+        world.setExit(exit);
+        world.setTiles(exit, Tileset.UNLOCKED_DOOR);
+    }
+
+    private static Point getExitRoomPoint(World world, Property property) {
+        List<Point> points = Wall.scanAllWalls(world);
+
+        Point exit;
+        while (true) {
+            exit = points.get(RandomUtils.uniform(property.getRandom(), points.size()));
+            boolean valid = true;
+            for (Point neighborPoint : Point.getEightNeighborPoints(exit.getX(), exit.getY())) {
+                if (world.isRoad(neighborPoint.getX(), neighborPoint.getY())) {
+                    valid = false;
+                    break;
+                }
+            }
+            if (valid) {
+                return exit;
+            }
+        }
+    }
+
+    private static Point getRandomRoom(Property property) {
+        ArrayList<Point> rooms = new ArrayList<>(property.getRoomAreas().keySet());
+        return rooms.get(RandomUtils.uniform(property.getRandom(), rooms.size()));
+    }
+
+    private static List<Point> getRoomPoints(Point downLeft, Point upperRight) {
+        List<Point> points = new ArrayList<>();
+
+        for (int x = downLeft.getX(); x <= upperRight.getX(); x += 1) {
+            for (int y = downLeft.getY(); y <= upperRight.getY(); y += 1) {
+                points.add(new Point(x, y));
+            }
+        }
+
+        return points;
+    }
 }

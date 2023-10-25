@@ -19,7 +19,8 @@ import java.io.Serializable;
 public class World implements Serializable {
     private final int width;
     private final int height;
-
+    private Point entry;
+    private Point exit;
     private TETile[][] tiles;
 
     World(int w, int h) {
@@ -28,14 +29,15 @@ public class World implements Serializable {
         tiles = new TETile[width][height];
     }
 
-    public void initilizeWorld(Property property) {
+    public void initilizeWorld(long seed, Property property) {
+        property.setRandom(seed);
         fillWorldNothing();
 
         Room.createRooms(this, property);
         Wall.createWallNodes(this, property);
         Road.createRoad(this, property);
         Wall.createWalls(this, property);
-
+        Room.createEntryAndExit(this, property);
     }
 
     public void fillWorldNothing() {
@@ -51,8 +53,25 @@ public class World implements Serializable {
     public World clone() {
         World ret = new World(width, height);
         ret.tiles = TETile.copyOf(tiles);
-
+        ret.entry = entry;
+        ret.exit = exit;
         return ret;
+    }
+
+    public Point getEntry() {
+        return entry;
+    }
+
+    public void setEntry(Point entry) {
+        this.entry = entry;
+    }
+
+    public Point getExit() {
+        return exit;
+    }
+
+    public void setExit(Point exit) {
+        this.exit = exit;
     }
 
     /**
@@ -135,5 +154,14 @@ public class World implements Serializable {
     public boolean isRoad(int x, int y) {
         return tiles[x][y].equals(Tileset.FLOOR);
     }
+
+    public boolean isDoor(int x, int y) {
+        return tiles[x][y].equals(Tileset.UNLOCKED_DOOR);
+    }
+
+    public boolean isAccessible(int x, int y) {
+        return isRoom(x, y) || isRoad(x, y) || isDoor(x, y);
+    }
+
 
 }
