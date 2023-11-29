@@ -21,8 +21,7 @@ This is a repository contains CS61B labs and projects, which also records my sel
 - [x] Project 0: 2048
 - [x] Project 1 (EC): Data Structures
 - [x] Project 2: Gitlet (Not full graded)
-- [x] Project 3: CS61BYoW (No game sharing)
-
+- [x] Project 3: CS61BYoW
 ## Configuration
 
 - VSCode Extensions
